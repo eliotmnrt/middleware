@@ -4,68 +4,23 @@
     <meta charset="UTF-8">
     <title>mock maps</title>
     <link rel="stylesheet" href="style2.css">
-    <script type="module" src="js.js"></script>
+    <script type="module" src="menu.js"></script>
 </head>
 <body>
-<header>
-    <h2> Super site de fou pour les itinéraires </h2>
-</header>
-<div class="container">
-    <div class="input-section">
-        <div class="input-container">
-            <div class="input-group">
-                <label for="origin">Adresse de départ</label>
-                <input type="text" id="origin" placeholder="Adresse de départ">
-                <button id="current-location">Utiliser la localisation actuelle</button>
-            </div>
-            <img src="pointInterrogation.png" alt="test" width="30" height="30">
+    <header>
+        <h2> Itinerary </h2>
+    </header>
+    <div id="overlay">
+        <div class="container">
+            <script src="menu.js"></script>
+            <script src="myInput.js"></script>
+            <my-menu>
+            </my-menu>
         </div>
-        <div class="input-container">
-            <div class="input-group">
-                <label for="destination">Adresse de destination</label>
-                <input type="text" id="destination" placeholder="Adresse de destination">
-                <button id="map-click">Selectionner sur la map</button>
-            </div>
-            <img src="pointInterrogation.png" alt="test" width="30" height="30">
+        <div id="map">
+            <img src="map.png">
         </div>
     </div>
-
-    <!-- Map Section -->
-    <div class="map-section">
-        <div id="map">Map
-            <div id="map_overlay">
-                <p>Temps de trajet: 26min</p>
-                <p>Temps de bouchon estimé: 4min</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Itinerary Section -->
-    <div class="itinerary-section">
-        <h3>Détails de l'itinéraire</h3>
-        <p>Étape 1: prendre la 1ère sortie sur votre droite dans 500m</p>
-        <p>Étape 1: prendre la 1ère sortie sur votre droite dans 500m</p>
-        <p>Étape 1: prendre la 1ère sortie sur votre droite dans 500m</p>
-        <p>Étape 1: prendre la 1ère sortie sur votre droite dans 500m</p>
-        <p>Étape 1: prendre la 1ère sortie sur votre droite dans 500m</p>
-        <p>Étape 1: prendre la 1ère sortie sur votre droite dans 500m</p>
-        <p>Étape 1: prendre la 1ère sortie sur votre droite dans 500m</p>
-        <p>Étape 1: prendre la 1ère sortie sur votre droite dans 500m</p>
-        <p>Étape 1: prendre la 1ère sortie sur votre droite dans 500m</p>
-        <p>Étape 36: faire demi-tour</p>
-        <p>Étape 36: faire demi-tour</p>
-        <p>Étape 36: faire demi-tour</p>
-        <p>Étape 36: faire demi-tour</p>
-        <p>Étape 36: faire demi-tour</p>
-        <p>Étape 36: faire demi-tour</p>
-        <h4>ETA: 14 minutes, Distance: 2.5 km</h4>
-    </div>
-
-    <!-- Popup for real-time information -->
-    <div class="popup" id="popup">
-        <p>Traffic delay: Route recalculated. New ETA: 16 minutes.</p>
-    </div>
-</div>
 
 </body>
 </html>
