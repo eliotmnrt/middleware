@@ -13,6 +13,9 @@ class Menu extends HTMLElement {
         menu.innerHTML = `
       <my-input placeholder="Départ"></my-input>
       <my-input placeholder="Arrivé"></my-input>
+      
+      <my-step placeholder="1. Départ"></my-step>
+      <my-step placeholder="2. Arrivé"></my-step>
     `;
 
         const toggleButton = document.createElement('div');
