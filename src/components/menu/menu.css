@@ -1,0 +1,14 @@
+#toggle-btn{
+    padding: 5px;
+    width: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+}
+.menu-icon{
+    width: 30px;
+}
+.deco{
+    width: 250px;
+}

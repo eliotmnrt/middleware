@@ -1,4 +1,6 @@
 class Menu extends HTMLElement {
+    containerWidth ='400px'
+
     constructor() {
         super();
         // Attache le shadow DOM
@@ -8,6 +10,8 @@ class Menu extends HTMLElement {
         const container = document.createElement('div');
         container.setAttribute('class', 'menu-container');
 
+        
+
         const menu = document.createElement('div');
         menu.setAttribute('class', 'side-menu');
         menu.innerHTML = `
@@ -16,22 +20,26 @@ class Menu extends HTMLElement {
       
       <my-step placeholder="1. Départ"></my-step>
       <my-step placeholder="2. Arrivé"></my-step>
-    `;
+    `;  
+        const deco=document.createElement('img');
+        deco.setAttribute('class','deco');
+        deco.setAttribute('src','./images/deco.png');
 
         const toggleButton = document.createElement('div');
-        toggleButton.innerText = '☰ Menu';
-        toggleButton.setAttribute('class', 'toggle-btn');
+        toggleButton.setAttribute('id', 'toggle-btn');
+        toggleButton.innerHTML = '<img src="./images/menuIcon.png" alt="Menu Icon" class="menu-icon">';
         toggleButton.onclick = () => this.toggleMenu();
 
 
         container.appendChild(toggleButton);
         container.appendChild(menu);
+        container.appendChild(deco);
         shadow.appendChild(container);
 
         // Lien au fichier CSS externe
         const linkElem = document.createElement('link');
         linkElem.setAttribute('rel', 'stylesheet');
-        linkElem.setAttribute('href', 'menu.css');
+        linkElem.setAttribute('href', './components/menu/menu.css');
         shadow.appendChild(linkElem);
     }
 
@@ -42,15 +50,13 @@ class Menu extends HTMLElement {
         const menuContainer = this.ownerDocument.querySelector('.container');
         if (container.style.display === 'none') {
             container.style.display = 'block';
-            toggleButton.innerText = '☰ Menu';
-            menuContainer.style.width = '250px';
+            menuContainer.style.width = this.containerWidth;
         } else {
             container.style.display = 'none';
-            toggleButton.innerText = '☰';
             menuContainer.style.width = 'fit-content';
-
         }
     }
+
 }
 
 // Définir l'élément personnalisé
