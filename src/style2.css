@@ -128,3 +128,13 @@ button:hover {
 .input-container > img {
     margin-top: 25px;
 }
+
+#debug {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 250px;
+    height: 100px;
+    background: #cccccc;
+    z-index: 1000;
+}

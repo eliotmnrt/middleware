@@ -55,6 +55,8 @@ class MyInput extends HTMLElement {
                 suggestion.textContent = feature.properties.label;
                 suggestion.addEventListener('click', () => {
                     input.value = feature.properties.label;
+                    input.setAttribute('data-lon', feature.geometry.coordinates[0]);
+                    input.setAttribute('data-lat', feature.geometry.coordinates[1]);
                     suggestionsList.innerHTML = ''; // Masquer les suggestions après sélection
                 });
                 suggestionsList.appendChild(suggestion);

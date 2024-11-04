@@ -16,6 +16,7 @@ class Menu extends HTMLElement {
       
       <my-step placeholder="1. Départ"></my-step>
       <my-step placeholder="2. Arrivé"></my-step>
+      <div id="envoi"> envoi </div>
     `;
 
         const toggleButton = document.createElement('div');
@@ -43,11 +44,20 @@ class Menu extends HTMLElement {
         console.log(cleanStart, cleanEnd)
         let locaStart = (await fetch(`https://api-adresse.data.gouv.fr/search/?q=${cleanStart}&limit=5`));
         await locaStart.json().then(r => locaStart = r.features[0].geometry.coordinates);
-        let locaEnd = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${cleanStart}&limit=5`);
+        let locaEnd = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${cleanEnd}&limit=5`);
         await locaEnd.json().then(r => locaEnd = r.features[0].geometry.coordinates);
         console.log(locaStart, locaEnd)
+        L.marker([locaStart[1], locaStart[0]]).addTo(window.map);
+        L.marker([locaEnd[1], locaEnd[0]]).addTo(window.map);
         const rep = await fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf62482e4596c77c6c41079fbec41de976c380&start=${locaStart[0]},${locaStart[1]}&end=${locaEnd[0]},${locaEnd[1]}`)
-        console.log(rep.json().then(r => console.log(r)));
+        let coords = [];
+        rep.json().then(r => {
+            coords = r.features[0].geometry.coordinates;
+            const latLngCoordinates = coords.map(coord => [coord[1], coord[0]]);
+            const polyline = L.polyline(latLngCoordinates, { color: 'blue' }).addTo(window.map);
+            window.map.fitBounds(polyline.getBounds());
+        });
+
     }
 
     // Méthode pour afficher/masquer le menu
