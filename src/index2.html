@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>mock maps</title>
+    <link rel="stylesheet" href="resseting.css">
     <link rel="stylesheet" href="style2.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
-    <header>
-        <h2> Itinerary </h2>
+    <header class="banner">
+        <img class="banner" src="./images/logo.png" alt="logo">
+        <h1 class="banner">Itinerary</h1>
     </header>
     <div id="overlay">
         <div class="container">
-            <script src="menu.js"></script>
-            <script src="myInput.js"></script>
-            <script src="step.js"></script>
+            <script src="./components/menu/menu.js"></script>
+            <div class="origin-dest">
+                <script class="origin-dest" src="./components/myInput/myInput.js"></script>
+            </div>
+            <script src="./components/step/step.js"></script>
             <my-menu>
             </my-menu>
         </div>

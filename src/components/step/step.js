@@ -20,7 +20,7 @@ class Step extends HTMLElement {
         // Lien au fichier CSS externe
         const linkElem = document.createElement('link');
         linkElem.setAttribute('rel', 'stylesheet');
-        linkElem.setAttribute('href', 'step.css');
+        linkElem.setAttribute('href', './components/step/step.css');
         shadow.appendChild(linkElem);
     }
 

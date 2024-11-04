@@ -70,7 +70,7 @@ class MyInput extends HTMLElement {
 
         const linkElem = document.createElement('link');
         linkElem.setAttribute('rel', 'stylesheet');
-        linkElem.setAttribute('href', 'myInput.css');
+        linkElem.setAttribute('href', './components/myInput/myInput.css');
         shadow.appendChild(linkElem);
     }
 }

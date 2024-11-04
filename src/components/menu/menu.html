@@ -1,0 +1,21 @@
+<template id="menu">
+    <link rel="stylesheet" href="./components/menu/menu.css">
+    <div class="container">
+        <div id="toggle-btn">
+            <img src="./images/menuIcon.png" alt="Menu Icon" class="menu-icon">
+        </div>
+        
+        <div class="side-menu">
+            <div class="depart-dest-style">
+                <div class="input-container">
+                    <my-input placeholder="Départ"></my-input>
+                    <my-input placeholder="Arrivé"></my-input>
+                </div>
+            </div>
+            <my-step placeholder="1. Départ"></my-step>
+            <my-step placeholder="2. Arrivé"></my-step>
+            <p id="go">GO</p>
+        </div>
+        <img class="deco" src="./images/deco.png" alt="Decoration">
+    </div>
+</template>

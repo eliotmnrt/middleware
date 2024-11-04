@@ -1,0 +1,13 @@
+.custom-input{
+    border-radius: 8px;
+    border-color: #2f4156 ;
+    border-width: 1px;
+    width: 200px;
+    height: 40px;
+    margin-top: 10px;
+}
+
+.suggestion {
+    font-size: 0.6em;
+    cursor: pointer;
+}
