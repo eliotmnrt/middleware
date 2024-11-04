@@ -16,11 +16,11 @@ async function setMap() {
 
 setMap().then(r => {
     console.log(r)
-    let map = L.map('map').setView([r[0], r[1]], 13);
+    window.map = L.map('map').setView([r[0], r[1]], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-    var marker = L.marker([r[0], r[1]]).addTo(map);
+    }).addTo(window.map);
+    var marker = L.marker([r[0], r[1]]).addTo(window.map);
 
     console.log("map loaded");
 });
