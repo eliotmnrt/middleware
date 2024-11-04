@@ -5,7 +5,8 @@
     <title>mock maps</title>
     <link rel="stylesheet" href="resseting.css">
     <link rel="stylesheet" href="style2.css">
-    <script type="module" src="menu.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
     <header class="banner">
@@ -16,14 +17,14 @@
         <div class="container">
             <script src="./components/menu/menu.js"></script>
             <div class="origin-dest">
-                <script class="origin-dest" src="./components/origin-dest/myInput.js"></script>
+                <script class="origin-dest" src="./components/myInput/myInput.js"></script>
             </div>
             <script src="./components/step/step.js"></script>
             <my-menu>
             </my-menu>
         </div>
         <div id="map">
-            <img src="./images/map.png" alt="map">
+            <script src="map.js"></script>
         </div>
     </div>
 
