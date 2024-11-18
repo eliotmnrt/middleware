@@ -1,12 +1,15 @@
 class Step extends HTMLElement {
+    shadow;
     constructor() {
         super();
         // Attache le shadow DOM
-        const shadow = this.attachShadow({ mode: 'open' });
+        this.shadow = this.attachShadow({mode: 'open'});
+    }
 
+    connectedCallback() {
         // Structure HTML du menu
         const container = document.createElement('div');
-        container.setAttribute('class', 'step-container');
+        container.setAttribute('class', 'step');
 
         let infos = this.getAttribute('placeholder')
 
@@ -15,15 +18,14 @@ class Step extends HTMLElement {
         step.innerHTML = `<p>${infos}</p>`;
 
         container.appendChild(step);
-        shadow.appendChild(container);
+        this.shadow.appendChild(container);
 
         // Lien au fichier CSS externe
         const linkElem = document.createElement('link');
         linkElem.setAttribute('rel', 'stylesheet');
         linkElem.setAttribute('href', './components/step/step.css');
-        shadow.appendChild(linkElem);
+        this.shadow.appendChild(linkElem);
     }
-
 }
 
 // Définir l'élément personnalisé

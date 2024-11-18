@@ -22,39 +22,16 @@ class Menu extends HTMLElement {
                 const toggleButton = shadow.querySelector('#toggle-btn');
                 toggleButton.onclick = () => this.toggleMenu();
                 const goButton = shadow.querySelector('#go');
-                goButton.onclick = () => this.calculatePath();
+                goButton.onclick = () => {
+                    const start = this.shadowRoot.querySelector('my-input').shadowRoot.querySelector('.custom-input').value;
+                    const end = this.shadowRoot.querySelectorAll('my-input')[1].shadowRoot.querySelector('.custom-input').value;
+                    console.log(start, end);
+                    remainingSteps = calculatePath(start, end);
+                }
             })
             .catch(error => {
                 console.error('Error loading template:', error);
             });
-    }
-
-    polyline = null;
-    async calculatePath() {
-        const start = this.shadowRoot.querySelector('my-input').shadowRoot.querySelector('.custom-input').value;
-        const end = this.shadowRoot.querySelectorAll('my-input')[1].shadowRoot.querySelector('.custom-input').value;
-        let cleanStart = start.replaceAll(' ', '+');
-        let cleanEnd = end.replaceAll(' ', '+');
-        console.log(cleanStart, cleanEnd)
-        let locaStart = (await fetch(`https://api-adresse.data.gouv.fr/search/?q=${cleanStart}&limit=5`));
-        await locaStart.json().then(r => locaStart = r.features[0].geometry.coordinates);
-        let locaEnd = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${cleanEnd}&limit=5`);
-        await locaEnd.json().then(r => locaEnd = r.features[0].geometry.coordinates);
-        console.log(locaStart, locaEnd)
-        L.marker([locaStart[1], locaStart[0]]).addTo(window.map);
-        L.marker([locaEnd[1], locaEnd[0]]).addTo(window.map);
-        const rep = await fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf62482e4596c77c6c41079fbec41de976c380&start=${locaStart[0]},${locaStart[1]}&end=${locaEnd[0]},${locaEnd[1]}`)
-        let coords = [];
-        rep.json().then(r => {
-            if (this.polyline){
-                window.map.removeLayer(this.polyline);
-            }
-            coords = r.features[0].geometry.coordinates;
-            const latLngCoordinates = coords.map(coord => [coord[1], coord[0]]);
-            this.polyline = L.polyline(latLngCoordinates, { color: 'blue' }).addTo(window.map);
-            window.map.fitBounds(this.polyline.getBounds());
-        });
-
     }
 
     // Method to show/hide the menu
@@ -70,6 +47,77 @@ class Menu extends HTMLElement {
             this.shadowRoot.querySelector(".deco").style.display = 'none';
             menuContainer.style.width = 'fit-content';
         }
+    }
+}
+
+let polyline = null;
+let markers = [];
+let remainingSteps;
+async function calculatePath(start, end) {
+    try {
+        console.log(start, end);
+        let locaStart;
+        let locaEnd;
+        const regex = /^-?\d{1,2}\.\d{4}$/;
+        if (!regex.test(start[0]) || !regex.test(start[1]) || !regex.test(end[0]) || !regex.test(end[1])) {
+            start = start.replaceAll(' ', '+');
+            end = end.replaceAll(' ', '+');
+            console.log(start, end);
+            locaStart = (await fetch(`https://api-adresse.data.gouv.fr/search/?q=${start}&limit=5`));
+            await locaStart.json().then(r => locaStart = r.features[0].geometry.coordinates);
+            locaEnd = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${end}&limit=5`);
+            await locaEnd.json().then(r => locaEnd = r.features[0].geometry.coordinates);
+        } else {
+            locaStart = start;
+            locaEnd = end;
+        }
+
+        console.log(locaStart, locaEnd);
+
+        L.marker([locaStart[1], locaStart[0]]).addTo(window.map);
+        L.marker([locaEnd[1], locaEnd[0]]).addTo(window.map);
+        const rep = await fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf62482e4596c77c6c41079fbec41de976c380&start=${locaStart[0]},${locaStart[1]}&end=${locaEnd[0]},${locaEnd[1]}`)
+        let coords = [];
+        rep.json().then(r => {
+            if (markers.length > 0) {
+                markers.forEach(marker => window.map.removeLayer(marker));
+            }
+            stepMarkers = [];
+            // recup les steps du chemin
+            console.log(r.features[0].properties.segments[0].steps);
+            const stepContainer = document.querySelector("my-menu").shadowRoot.querySelector('#steps-container');
+            const allSteps = r.features[0].properties.segments[0].steps;
+            let lastPoint = null
+            for (let i = 0; i < 10; i++) {
+                if (allSteps.length < i) break;
+                const step = allSteps[i];
+                const stepElement = document.createElement('my-step');
+                console.log('instruction' + step.instruction);
+                stepElement.setAttribute('placeholder', `${i + 1}. ` + step.instruction);
+                stepContainer.appendChild(stepElement);
+                lastPoint = step.way_points[1];
+
+                const startPoint = step.way_points[0];
+                const startCoords = r.features[0].geometry.coordinates[startPoint];
+                const marker = L.marker([startCoords[1], startCoords[0]]).addTo(window.map);
+
+                stepMarkers.push(marker);
+            }
+            console.log(lastPoint);
+            if (polyline) {
+                window.map.removeLayer(polyline);
+            }
+            coords = r.features[0].geometry.coordinates;
+            const latLngCoordinates = coords.slice(0, lastPoint).map(coord => [coord[1], coord[0]]);
+            polyline = L.polyline(latLngCoordinates, {color: 'blue'}).addTo(window.map);
+            window.map.fitBounds(polyline.getBounds());
+
+            startConsumingSteps();
+
+            return allSteps.length;
+        });
+    } catch (e) {
+        console.error(e);
     }
 }
 
