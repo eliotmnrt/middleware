@@ -9,6 +9,14 @@
 .menu-icon{
     width: 30px;
 }
-.deco{
+img.deco{
     width: 250px;
+}
+img.deco-input{
+    height: 80px;
+    margin-top: 25px;
+    margin-right: 5px;
+}
+.depart-dest-style{
+    display: flex;
 }
