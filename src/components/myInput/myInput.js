@@ -9,23 +9,37 @@ class MyInput extends HTMLElement {
                 let templateContent = new DOMParser()
                     .parseFromString(htmlContent, "text/html")
                     .querySelector("template").content;
-
                 shadow.appendChild(templateContent.cloneNode(true));
 
-                const customInput= shadow.querySelector('.custom-input');
-                //const myLocation = shadow.querySelector('.myLocation');
+                const customInput = shadow.querySelector('.custom-input');
                 const suggestionsContainer = shadow.querySelector(".suggestions-container");
-
-
                 customInput.setAttribute('placeholder', this.getAttribute('placeholder'));
+
+                //Create my location suggestion
                 const myLocation = document.createElement('li');
                 myLocation.setAttribute('class', 'myLocation');
                 myLocation.innerHTML = 'Ma localisation';
                 suggestionsContainer.appendChild(myLocation);
-                suggestionsContainer.style.display = 'none';
-                const allSuggestions = document.querySelectorAll('.suggestion');
 
-                myLocation.style.display = 'none';
+                // Reset the suggestions container
+                const resetSuggestions = () => {
+                    suggestionsContainer.innerHTML = ''; // Vide le conteneur
+                    suggestionsContainer.appendChild(myLocation);
+                    suggestionsContainer.style.display = 'none';
+                }
+                const addSuggestion = (feature) => {
+                    const suggestion = document.createElement('li');
+                    suggestion.setAttribute('class', 'suggestion');
+                    suggestion.textContent = feature.properties.label;
+                    suggestion.addEventListener('click', () => {
+                        customInput.value = feature.properties.label;
+                        customInput.setAttribute('data-lon', feature.geometry.coordinates[0]);
+                        customInput.setAttribute('data-lat', feature.geometry.coordinates[1]);
+                        resetSuggestions();
+                    });
+                    suggestionsContainer.appendChild(suggestion);
+                }
+                resetSuggestions();
                 //handle my location
                 myLocation.addEventListener('click', async () => {
                     if ("geolocation" in navigator) {
@@ -33,59 +47,44 @@ class MyInput extends HTMLElement {
                             const rep = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${position.coords.longitude}&lat=${position.coords.latitude}`);
                             const data = await rep.json();
                             customInput.value = data.features[0].properties.label;
-                            allSuggestions.forEach(mySuggestion => {
-                                mySuggestion.innerHTML = '';
-                                mySuggestion.style.display = 'none';
-                            });
-                            myLocation.style.display = 'none';
-                            suggestionsContainer.style.display = 'none';
+                            resetSuggestions();
                         });
                     } else {
                         console.log("geolocation is not available");
                     }
                 });
-                //suggestionsContainer.setAttribute('class', 'suggestion');
-                customInput.addEventListener('input', async () => {
-                    const query = customInput.value;
+                const fetchSuggestions = async (query) => {
                     if (query.length < 3) {
+                        // Montre uniquement myLocation
+                        resetSuggestions();
                         myLocation.style.display = 'block';
-
-                        return;
-                    }
-                    try {
                         suggestionsContainer.style.display = 'block';
-                        const cleanQuery = query.replaceAll(' ', '+');
-
-                        const rep = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${cleanQuery}`);
-                        const data = await rep.json();
-                        suggestionsContainer.innerHTML = ''; // Réinitialiser les suggestions
-
-                        data.features.forEach(feature => {
-                            const suggestion = document.createElement('li');
-                            suggestion.setAttribute('class', 'suggestion');
-                            suggestion.textContent = feature.properties.label;
-                            suggestion.addEventListener('click', () => {
-                                customInput.value = feature.properties.label;
-                                customInput.setAttribute('data-lon', feature.geometry.coordinates[0]);
-                                customInput.setAttribute('data-lat', feature.geometry.coordinates[1]);
-                                allSuggestions.forEach(mySuggestion => {
-                                    mySuggestion.innerHTML = '';
-                                    mySuggestion.style.display = 'none';
-                                });
-                                suggestionsContainer.style.display = 'none';
-                                myLocation.style.display = 'none';
-                            });
-                            suggestionsContainer.appendChild(suggestion);
-                        });
-                    } catch (error) {
-                        console.error('Error fetching suggestions:', error);
-                    }  });
-                const container= shadow.querySelector('.myInput-container');
-                container.appendChild(suggestionsContainer);
+                    } else {
+                        try {
+                            const cleanQuery = query.replaceAll(' ', '+');
+                            const rep = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${cleanQuery}`);
+                            const data = await rep.json();
+                            resetSuggestions();
+                            myLocation.style.display = 'none'; // Cache myLocation
+                            data.features.forEach(addSuggestion);
+                            suggestionsContainer.style.display = 'block';
+                        } catch (error) {
+                            console.error('Error fetching suggestions:', error);
+                        }
+                    }
+                };
+                // only show suggestions when the input is focused
                 customInput.addEventListener('focus', () => {
-                    myLocation.style.display = 'block';
-                    suggestionsContainer.style.display = 'block'; // Affiche la liste
+                    suggestionsContainer.style.display = 'block';
+                    myLocation.style.display = customInput.value.length < 3 ? 'block' : 'none';
                 });
+                //hide suggestions when the input is blurred
+                customInput.addEventListener('blur', () => {
+                    setTimeout(resetSuggestions, 200); // Permet les clics avant de cacher
+                });
+
+                // Fetch suggestions when the input value changes
+                customInput.addEventListener('input', () => fetchSuggestions(customInput.value));
 
             }) .catch(error => {
             console.error('Error loading template:', error);
