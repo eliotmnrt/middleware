@@ -92,7 +92,9 @@ async function calculatePath(start, end) {
 
 
 async function consumeSteps() {
-    if (3 < stepContainer.childElementCount && stepContainer.childElementCount <= 10) {
+    console.log(remainingSteps);
+    console.log(stepContainer.childElementCount);
+    if (3 < stepContainer.childElementCount) {
         stepContainer.removeChild(stepContainer.firstChild);
         console.log(remainingSteps);
         remainingSteps--;
