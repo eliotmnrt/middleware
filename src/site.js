@@ -22,6 +22,8 @@ let k = 0;
 let intervalId = null;
 
 async function calculatePath(start, end) {
+    const stepContainer = document.querySelector("my-menu").shadowRoot.querySelector('#steps-container');
+    stepContainer.style.display='block';
     try {
         console.log(start, end);
         let locaStart;
@@ -53,7 +55,6 @@ async function calculatePath(start, end) {
             stepMarkers = [];
             // recup les steps du chemin
             console.log(r.features[0].properties.segments[0].steps);
-            const stepContainer = document.querySelector("my-menu").shadowRoot.querySelector('#steps-container');
             const allSteps = r.features[0].properties.segments[0].steps;
             let lastPoint = null
             for (let i = 0; i < 10; i++) {

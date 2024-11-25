@@ -22,6 +22,8 @@ class Menu extends HTMLElement {
                 const toggleButton = shadow.querySelector('#toggle-btn');
                 toggleButton.onclick = () => this.toggleMenu();
                 const goButton = shadow.querySelector('#go');
+                const stepsContainer = shadow.querySelector('#steps-container');
+                stepsContainer.style.display='none';
                 goButton.onclick = () => {
                     const start = this.shadowRoot.querySelector('my-input').shadowRoot.querySelector('.custom-input').value;
                     const end = this.shadowRoot.querySelectorAll('my-input')[1].shadowRoot.querySelector('.custom-input').value;

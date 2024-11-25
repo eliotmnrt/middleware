@@ -35,13 +35,16 @@ img.deco-input{
     align-items: center;
 }
 #steps-container{
+    display: none;
+    border-style: solid;
     position: absolute;
-    width: 259px;
+    border-color: #2f4156;
+    width: 249px;
     height: 400px;
     background-color: aliceblue;
     border-radius: 8px;
     z-index: 1000;
     padding: 2px;
     overflow-y: hidden;
-    margin-left: 5px;
+    margin-left: 15px;
 }
