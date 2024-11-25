@@ -9,9 +9,6 @@
 .menu-icon{
     width: 30px;
 }
-img.deco{
-    width: 250px;
-}
 img.deco-input{
     height: 80px;
     margin-top: 25px;
@@ -19,4 +16,32 @@ img.deco-input{
 }
 .depart-dest-style{
     display: flex;
+}
+#go{
+    border-style: solid;
+    border-radius: 8px;
+    border-color: #2f4156;
+    background-color: #c6d8e4;
+    width: 86px;
+    height: 29px;
+    margin-top: 10px;
+    text-align: center;
+    margin-left: 10px;
+    color: #2f4156;
+    font-size: 17px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#steps-container{
+    position: absolute;
+    width: 259px;
+    height: 400px;
+    background-color: aliceblue;
+    border-radius: 8px;
+    z-index: 1000;
+    padding: 2px;
+    overflow-y: hidden;
+    margin-left: 5px;
 }

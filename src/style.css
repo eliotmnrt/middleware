@@ -96,3 +96,9 @@ img.origin-dest{
 .input-container > img {
     margin-top: 25px;
 }
+.deco{
+    position: absolute;
+    width: 303px;
+    top: 325px;
+    z-index: 0;
+}
