@@ -41,10 +41,10 @@ class Menu extends HTMLElement {
         if (container.style.display === 'none') {
             container.style.display = 'block';
             menuContainer.style.width = this.containerWidth;
-            this.shadowRoot.querySelector(".deco").style.display = 'block';
+            document.querySelector(".deco").style.display = 'block';
         } else {
             container.style.display = 'none';
-            this.shadowRoot.querySelector(".deco").style.display = 'none';
+            document.querySelector(".deco").style.display = 'none';
             menuContainer.style.width = 'fit-content';
         }
     }
