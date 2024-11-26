@@ -12,10 +12,13 @@ class Step extends HTMLElement {
         container.setAttribute('class', 'step');
 
         let infos = this.getAttribute('placeholder')
+        let distance = this.getAttribute('distance')/1000
+        distance = distance.toFixed(4).replace(/\.?0+$/, "");
+        let time = Math.floor(this.getAttribute('time')/60)
 
         const step = document.createElement('div');
         step.setAttribute('class', 'step');
-        step.innerHTML = `<p>${infos}</p>`;
+        step.innerHTML = `<p>${infos} - ${time} min (${distance} km)</p>`;
 
         container.appendChild(step);
         this.shadow.appendChild(container);

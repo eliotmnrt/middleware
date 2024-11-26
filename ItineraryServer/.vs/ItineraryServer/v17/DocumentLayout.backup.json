@@ -11,16 +11,16 @@
       "RelativeMoniker": "D:0:0:{05B8D96B-412B-4720-A18C-6DE5E1177FE8}|ItineraryServer.csproj|solutionrelative:istationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{05B8D96B-412B-4720-A18C-6DE5E1177FE8}|ItineraryServer.csproj|C:\\Users\\eliot\\IdeaProjects\\middleware\\ItineraryServer\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{05B8D96B-412B-4720-A18C-6DE5E1177FE8}|ItineraryServer.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{05B8D96B-412B-4720-A18C-6DE5E1177FE8}|ItineraryServer.csproj|C:\\Users\\eliot\\IdeaProjects\\middleware\\ItineraryServer\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{05B8D96B-412B-4720-A18C-6DE5E1177FE8}|ItineraryServer.csproj|solutionrelative:app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{05B8D96B-412B-4720-A18C-6DE5E1177FE8}|ItineraryServer.csproj|C:\\Users\\eliot\\IdeaProjects\\middleware\\ItineraryServer\\properties\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{05B8D96B-412B-4720-A18C-6DE5E1177FE8}|ItineraryServer.csproj|solutionrelative:properties\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{05B8D96B-412B-4720-A18C-6DE5E1177FE8}|ItineraryServer.csproj|C:\\Users\\eliot\\IdeaProjects\\middleware\\ItineraryServer\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
-      "RelativeMoniker": "D:0:0:{05B8D96B-412B-4720-A18C-6DE5E1177FE8}|ItineraryServer.csproj|solutionrelative:app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+      "AbsoluteMoniker": "D:0:0:{05B8D96B-412B-4720-A18C-6DE5E1177FE8}|ItineraryServer.csproj|C:\\Users\\eliot\\IdeaProjects\\middleware\\ItineraryServer\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{05B8D96B-412B-4720-A18C-6DE5E1177FE8}|ItineraryServer.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -46,7 +46,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "App.config",
               "DocumentMoniker": "C:\\Users\\eliot\\IdeaProjects\\middleware\\ItineraryServer\\App.config",
               "RelativeDocumentMoniker": "App.config",
@@ -62,9 +62,9 @@
               "Title": "StationService.cs",
               "DocumentMoniker": "C:\\Users\\eliot\\IdeaProjects\\middleware\\ItineraryServer\\StationService.cs",
               "RelativeDocumentMoniker": "StationService.cs",
-              "ToolTip": "C:\\Users\\eliot\\IdeaProjects\\middleware\\ItineraryServer\\StationService.cs",
-              "RelativeToolTip": "StationService.cs",
-              "ViewState": "AgIAACAAAAAAAAAAAAAAwDsAAAAZAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\eliot\\IdeaProjects\\middleware\\ItineraryServer\\StationService.cs*",
+              "RelativeToolTip": "StationService.cs*",
+              "ViewState": "AgIAAIQAAAAAAAAAAAAgwIgAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-11-23T16:08:24.322Z",
               "EditorCaption": ""
@@ -77,13 +77,14 @@
               "RelativeDocumentMoniker": "IStationService.cs",
               "ToolTip": "C:\\Users\\eliot\\IdeaProjects\\middleware\\ItineraryServer\\IStationService.cs",
               "RelativeToolTip": "IStationService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAA+AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-23T16:08:08.448Z"
+              "WhenOpened": "2024-11-23T16:08:08.448Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\eliot\\IdeaProjects\\middleware\\ItineraryServer\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",

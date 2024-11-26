@@ -59,7 +59,12 @@ namespace ItineraryServer
             var route2 = GetBikeRoute(station1, station2).Result;
             var route3 = GetFootRoute(station2, coords2).Result;
 
-            SendToQueue(JsonSerializer.Serialize(route1));
+            List<Feature> rep = new List<Feature>();
+            rep.Add(route1.features[0]);
+            rep.Add(route2.features[0]);
+            rep.Add(route3.features[0]);
+
+            SendToQueue(JsonSerializer.Serialize(rep));
 
             return "succesfull";
         }
@@ -127,16 +132,24 @@ namespace ItineraryServer
                 string url = urlStation + "?contract=" + contract.name + apiKey;
                 HttpResponseMessage stationResponse = await client.GetAsync(url);
                 var allStations = await stationResponse.Content.ReadAsStringAsync();
+                Trace.WriteLine(allStations);
                 List<Station> stationsOfContract = JsonSerializer.Deserialize<List<Station>>(allStations);
-                if (stationsOfContract.Count > 0)
+                Trace.WriteLine(stationsOfContract);
+                if( stationsOfContract != null)
                 {
-                    contractWithStations.Add(contract);
+                    if (stationsOfContract.Count > 0)
+                    {
+                        contractWithStations.Add(contract);
+                    }
+                    else
+                    {
+                        Trace.WriteLine("No station : " + contract.ToString());
+                    }
                 }
                 else
                 {
-                    Trace.WriteLine("No station : " + contract.ToString());
+                    Trace.WriteLine("erreur json : " + contract.ToString());
                 }
-
             }
             return contractWithStations;
 
@@ -548,7 +561,7 @@ namespace ItineraryServer
 
     public class Response
     {
-        public List<PropertiesPoints> properties { get; set; }
+        public List<Feature> properties { get; set; }
 
     }
 }

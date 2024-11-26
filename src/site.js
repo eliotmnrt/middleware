@@ -33,59 +33,59 @@ async function calculatePath(start, end) {
             start = start.replaceAll(' ', '+');
             end = end.replaceAll(' ', '+');
             console.log(start, end);
-            locaStart = (await fetch(`https://api-adresse.data.gouv.fr/search/?q=${start}&limit=5`));
-            await locaStart.json().then(r => locaStart = r.features[0].geometry.coordinates);
-            locaEnd = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${end}&limit=5`);
-            await locaEnd.json().then(r => locaEnd = r.features[0].geometry.coordinates);
-        } else {
-            locaStart = start;
+            locaStart = start
             locaEnd = end;
+        } else {
+            locaStart = start.toString();
+            locaEnd = end.toString();
         }
 
         console.log(locaStart, locaEnd);
-
-        L.marker([locaStart[1], locaStart[0]]).addTo(window.map);
-        L.marker([locaEnd[1], locaEnd[0]]).addTo(window.map);
-        const rep = await fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf62482e4596c77c6c41079fbec41de976c380&start=${locaStart[0]},${locaStart[1]}&end=${locaEnd[0]},${locaEnd[1]}`)
+        const rep = await fetch(`http://localhost:8081/Itinerary/CalculateItinerary?departure=${locaStart}&arrival=${locaEnd}`);
+        if (!rep.ok) {
+            throw new Error(`HTTP error! Status: ${rep.status}`);
+        }
+        const data = await rep.json();
         let coords = [];
-        rep.json().then(r => {
-            if (markers.length > 0) {
-                markers.forEach(marker => window.map.removeLayer(marker));
-            }
-            stepMarkers = [];
-            // recup les steps du chemin
-            console.log(r.features[0].properties.segments[0].steps);
-            const allSteps = r.features[0].properties.segments[0].steps;
-            let lastPoint = null
-            for (let i = 0; i < 10; i++) {
-                if (allSteps.length <= i) break;
-                const step = allSteps[i];
-                const stepElement = document.createElement('my-step');
-                console.log('instruction' + step.instruction);
-                stepElement.setAttribute('placeholder', `${k+i + 1}. ` + step.instruction);
-                stepElement.setAttribute('point', step.way_points[1]);
-                stepContainer.appendChild(stepElement);
-                lastPoint = step.way_points[1];
+        if (markers.length > 0) {
+            markers.forEach(marker => window.map.removeLayer(marker));
+        }
+        stepMarkers = [];
+        // recup les steps du chemin
+        console.log(data.features[0].properties.segments[0].steps);
+        const stepContainer = document.querySelector("my-menu").shadowRoot.querySelector('#steps-container');
+        const allSteps = data.features[0].properties.segments[0].steps;
+        let lastPoint = null
+        for (let i = 0; i < 10; i++) {
+            if (allSteps.length <= i) break;
+            const step = allSteps[i];
+            const stepElement = document.createElement('my-step');
+            console.log('instruction' + step.instruction);
+            stepElement.setAttribute('placeholder', `${k+i + 1}. ` + step.instruction);
+            stepElement.setAttribute("time", step.duration);
+            stepElement.setAttribute("distance", step.distance);
+            stepElement.setAttribute('point', step.way_points[1]);
+            stepContainer.appendChild(stepElement);
+            lastPoint = step.way_points[1];
 
-                const startPoint = step.way_points[0];
-                const startCoords = r.features[0].geometry.coordinates[startPoint];
-                const marker = L.marker([startCoords[1], startCoords[0]]).addTo(window.map);
+            const startPoint = step.way_points[0];
+            const startCoords = data.features[0].geometry.coordinates[startPoint];
+            const marker = L.marker([startCoords[1], startCoords[0]]).addTo(window.map);
 
-                stepMarkers.push(marker);
-            }
-            k += Math.min(10, allSteps.length);
-            console.log(lastPoint);
-            if (polyline) {
-                window.map.removeLayer(polyline);
-            }
-            path = r.features[0].geometry.coordinates;
-            const latLngCoordinates = path.slice(0, lastPoint).map(coord => [coord[1], coord[0]]);
-            polyline = L.polyline(latLngCoordinates, {color: 'blue'}).addTo(window.map);
-            window.map.fitBounds(polyline.getBounds());
+            stepMarkers.push(marker);
+        }
+        k += Math.min(10, allSteps.length);
+        console.log(lastPoint);
+        if (polyline) {
+            window.map.removeLayer(polyline);
+        }
+        path = data.features[0].geometry.coordinates;
+        const latLngCoordinates = path.slice(0, lastPoint).map(coord => [coord[1], coord[0]]);
+        polyline = L.polyline(latLngCoordinates, {color: 'blue'}).addTo(window.map);
+        window.map.fitBounds(polyline.getBounds());
 
-            remainingSteps = allSteps.length;
-            startConsumingSteps();
-        });
+        remainingSteps = allSteps.length;
+        startConsumingSteps();
     } catch (e) {
         console.error(e);
     }
@@ -97,11 +97,9 @@ async function consumeSteps() {
     console.log(stepContainer.childElementCount);
     if (3 < stepContainer.childElementCount) {
         stepContainer.removeChild(stepContainer.firstChild);
-        console.log(remainingSteps);
         remainingSteps--;
-    } else if (stepContainer.childElementCount < 3 && remainingSteps > 3) {
+    } else if (0 < stepContainer.childElementCount < 3 && remainingSteps > 3) {
         const point = stepContainer.firstChild.attributes['point'].value;
-        console.log(remainingSteps);
         remainingSteps = calculatePath(path[point], path[path.length - 1]);
     } else if (0 < stepContainer.childElementCount && stepContainer.childElementCount <= 3) {
         stepContainer.removeChild(stepContainer.firstChild);
@@ -109,12 +107,10 @@ async function consumeSteps() {
     } else if (remainingSteps === 0) {
         clearInterval(intervalId);
         k = 0;
+        alert("Arrivé à destination");
     }
 }
 
-async function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 function startConsumingSteps() {
     if (intervalId) {
@@ -122,15 +118,15 @@ function startConsumingSteps() {
     }
     intervalId = setInterval(consumeSteps, 1000);
 }
-
+let mess;
 
 if (window.WebSocket) {
     var client, destination;
-    document.querySelector("my-menu").shadowRoot.getElementById("envoi").onclick = function () {
+    document.getElementById("debug").onclick = function () {
         let url = "ws://localhost:61614/stomp";
         let login = "admin";
         let passcode = "password";
-        destination = "/topic/chat.general";
+        destination = "itineraryQueue";
 
         client = Stomp.client(url);
 
@@ -144,6 +140,60 @@ if (window.WebSocket) {
             client.debug("connected to Stomp");
             client.subscribe(destination, function (message) {
                 let p = document.createElement("p");
+                mess = message.body;
+                const response = JSON.parse(message.body);
+                let coords = [];
+                if (markers.length > 0) {
+                    markers.forEach(marker => window.map.removeLayer(marker));
+                }
+                stepMarkers = [];
+                // recup les steps du chemin
+                let lastPoint = null
+                path = [];
+                let totalSteps = 0;
+                for (let i = 0; i < response.length; i++) {
+                    const data = response[i];
+                    console.log(data.properties.segments[0].steps);
+                    const stepContainer = document.querySelector("my-menu").shadowRoot.querySelector('#steps-container');
+                    const allSteps = data.properties.segments[0].steps;
+                    totalSteps += allSteps;
+                    for (let i = 0; i < allSteps.length; i++) {
+                        if (allSteps.length <= i) break;
+                        const step = allSteps[i];
+                        const stepElement = document.createElement('my-step');
+                        console.log('instruction' + step.instruction);
+                        stepElement.setAttribute('placeholder', `${k+i + 1}. ` + step.instruction);
+                        stepElement.setAttribute("time", step.duration);
+                        stepElement.setAttribute("distance", step.distance);
+                        stepElement.setAttribute('point', step.way_points[1]);
+                        stepContainer.appendChild(stepElement);
+                        lastPoint = step.way_points[1];
+
+                        let startPoint = step.way_points[0];
+                        const startCoords = data.geometry.coordinates[startPoint];
+                        const marker = L.marker([startCoords[1], startCoords[0]]).addTo(window.map);
+
+                        stepMarkers.push(marker);
+                        console.log(startPoint, lastPoint)
+                        for (let i=startPoint; i<lastPoint; i++){
+                            path.push(data.geometry.coordinates[i]);
+                        }
+                    }
+                    k += allSteps.length;
+                }
+                console.log(lastPoint);
+                if (polyline) {
+                    window.map.removeLayer(polyline);
+                }
+
+                const latLngCoordinates = path.map(coord => [coord[1], coord[0]]);
+                console.log(latLngCoordinates)
+                polyline = L.polyline(latLngCoordinates, {color: 'blue'}).addTo(window.map);
+                console.log(polyline);
+                window.map.fitBounds(polyline.getBounds());
+
+                remainingSteps = totalSteps.length;
+                //startConsumingSteps();
                 p.appendChild(document.createTextNode(message.body));
                 document.getElementById("debug").append(p);
 
