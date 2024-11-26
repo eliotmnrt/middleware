@@ -174,7 +174,6 @@ if (window.WebSocket) {
                         const marker = L.marker([startCoords[1], startCoords[0]]).addTo(window.map);
 
                         stepMarkers.push(marker);
-                        console.log(startPoint, lastPoint)
                         for (let i=startPoint; i<lastPoint; i++){
                             path.push(data.geometry.coordinates[i]);
                         }
@@ -187,7 +186,6 @@ if (window.WebSocket) {
                 }
 
                 const latLngCoordinates = path.map(coord => [coord[1], coord[0]]);
-                console.log(latLngCoordinates)
                 polyline = L.polyline(latLngCoordinates, {color: 'blue'}).addTo(window.map);
                 console.log(polyline);
                 window.map.fitBounds(polyline.getBounds());

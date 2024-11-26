@@ -20,7 +20,6 @@ namespace ItineraryServer
         Regex coordsRegex = new Regex(@"/^-?\d{1,2}\.\d+$/", RegexOptions.Compiled);
         HttpClient client = new HttpClient();
         String apiKey = "&apiKey=1b6b6bf226341d91b3d0749ee3d52a71049b7a17";
-        String contratNantes = "&contract=nantes";
         String urlContracts = "https://api.jcdecaux.com/vls/v3/contracts?";
         String urlStation = "https://api.jcdecaux.com/vls/v3/stations";
         String urlRoadBike = "https://api.openrouteservice.org/v2/directions/cycling-regular?api_key=5b3ce3597851110001cf62482e4596c77c6c41079fbec41de976c380";
@@ -53,16 +52,30 @@ namespace ItineraryServer
             // Find nearest JCDecaux stations
             var station1 = GetNearestStation(coords1).Result;
             var station2 = GetNearestStation(coords2).Result;
-            // verifier que ca vaut le coup
+            
             // Generate route between stations
             var route1 = GetFootRoute(coords1, station1).Result;
             var route2 = GetBikeRoute(station1, station2).Result;
             var route3 = GetFootRoute(station2, coords2).Result;
 
+            var footPath = GetFootRoute(coords1, coords2).Result;
+
             List<Feature> rep = new List<Feature>();
-            rep.Add(route1.features[0]);
-            rep.Add(route2.features[0]);
-            rep.Add(route3.features[0]);
+            double total = route1.features[0].properties.summary.duration + route2.features[0].properties.summary.duration + route3.features[0].properties.summary.duration;
+
+            Trace.WriteLine(total);
+            Trace.WriteLine(footPath.features[0].properties.summary.duration);
+            if (footPath.features[0].properties.summary.duration < route1.features[0].properties.summary.duration + route2.features[0].properties.summary.duration + route3.features[0].properties.summary.duration)
+            {
+                Trace.WriteLine("Chemin à pied plus court");
+                rep.Add(footPath.features[0]);
+            } else
+            {
+                Trace.WriteLine("Chemin à velo plus court");
+                rep.Add(route1.features[0]);
+                rep.Add(route2.features[0]);
+                rep.Add(route3.features[0]);
+            }
 
             SendToQueue(JsonSerializer.Serialize(rep));
 
@@ -132,9 +145,7 @@ namespace ItineraryServer
                 string url = urlStation + "?contract=" + contract.name + apiKey;
                 HttpResponseMessage stationResponse = await client.GetAsync(url);
                 var allStations = await stationResponse.Content.ReadAsStringAsync();
-                Trace.WriteLine(allStations);
                 List<Station> stationsOfContract = JsonSerializer.Deserialize<List<Station>>(allStations);
-                Trace.WriteLine(stationsOfContract);
                 if( stationsOfContract != null)
                 {
                     if (stationsOfContract.Count > 0)
