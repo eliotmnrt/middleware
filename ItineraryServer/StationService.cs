@@ -27,13 +27,17 @@ namespace ItineraryServer
         String urlRoadFoot = "https://api.openrouteservice.org/v2/directions/foot-walking?api_key=5b3ce3597851110001cf62482e4596c77c6c41079fbec41de976c380";
         String urlDataGouv = "https://api-adresse.data.gouv.fr/search/";
 
+        GenericProxyCache<List<Contract>> CacheContratList = new GenericProxyCache<List<Contract>>();
+        GenericProxyCache<List<Station>> CacheStationList = new GenericProxyCache<List<Station>>();
+        GenericProxyCache<GeoFeatureCollection> CacheGoordList = new GenericProxyCache<GeoFeatureCollection>();
+        GenericProxyCache<RouteResponse> CacheRoute = new GenericProxyCache<RouteResponse>();
+
         List<Contract> allContracts = null;
         ISession session = null;
-
         public String GetItinerary(string address1, string address2)
         {
             if (address1 == null || address2 == null)
-            {
+            {   
                 return "error departure or arrival";
             }
             setUp();
@@ -74,7 +78,7 @@ namespace ItineraryServer
         public void setUp()
         {
             allContracts = getAllContracts().Result;
-
+            
             try
             {
                 // Créer une connexion à ActiveMQ
@@ -121,19 +125,14 @@ namespace ItineraryServer
 
         public async Task<List<Contract>> getAllContracts()
         {
-            HttpResponseMessage response = await client.GetAsync(urlContracts + apiKey);
-            response.EnsureSuccessStatusCode();
-            string responseBody = await response.Content.ReadAsStringAsync();
-            List<Contract> allContracts = JsonSerializer.Deserialize<List<Contract>>(responseBody);
-            allContracts.ForEach(contrat => Trace.WriteLine(contrat.ToString()));
+            List<Contract> allContracts = CacheContratList.Get(urlContracts + apiKey, 24*3600).Result;
+            //List<Contract> allContracts = .Get(urlContracts + apiKey, 24 * 3600).Result;
+            //allContracts.ForEach(contrat => Trace.WriteLine(contrat.ToString()));
             List<Contract> contractWithStations = new List<Contract>();
             foreach (Contract contract in allContracts)
             {
                 string url = urlStation + "?contract=" + contract.name + apiKey;
-                HttpResponseMessage stationResponse = await client.GetAsync(url);
-                var allStations = await stationResponse.Content.ReadAsStringAsync();
-                Trace.WriteLine(allStations);
-                List<Station> stationsOfContract = JsonSerializer.Deserialize<List<Station>>(allStations);
+                List<Station> stationsOfContract = CacheStationList.Get(url, 24 * 3600).Result;
                 Trace.WriteLine(stationsOfContract);
                 if( stationsOfContract != null)
                 {
@@ -157,23 +156,19 @@ namespace ItineraryServer
 
         private async Task<(double lat, double lon)> GetCoordinates(string address)
         {
-            var client = new HttpClient();
             String start = address.Replace(" ", "+");
             String url = urlDataGouv + "?q=" + start + "&limit=1";
-            String response = await client.GetStringAsync(url);
-            GeoFeatureCollection result = JsonSerializer.Deserialize<GeoFeatureCollection>(response);
+            GeoFeatureCollection result = CacheGoordList.Get(url).Result;
             return (result.features[0].geometry.coordinates[1], result.features[0].geometry.coordinates[0]); //inversion lat/long
         }
 
         private async Task<(double lat, double lon)> GetNearestStation((double lat, double lon) coords)
         {
-            var client = new HttpClient();
             var nearestContract = GetNearestContract(coords).Result;
             Trace.WriteLine("nearest contract" + nearestContract.ToString());
             string url = urlStation + "?contract=" + nearestContract.name + apiKey;
-            HttpResponseMessage stations = await client.GetAsync(url);
-            var allStations = await stations.Content.ReadAsStringAsync();
-            List<Station> stationsOfContract = JsonSerializer.Deserialize<List<Station>>(allStations);
+            
+            List<Station> stationsOfContract = CacheStationList.Get(url, 180).Result;
 
             Station nearestStation = null;
             double nearestDistance = double.MaxValue;
@@ -203,9 +198,7 @@ namespace ItineraryServer
                     foreach (String city in contract.cities)
                     {
                         string url = urlDataGouv + "?q=" + city + "&limit=1";
-                        HttpResponseMessage response = await client.GetAsync(url);
-                        string responseBody = await response.Content.ReadAsStringAsync();
-                        var results = JsonSerializer.Deserialize<GeoFeatureCollection>(responseBody);
+                        var results = CacheGoordList.Get(url).Result;
                         if (results == null)
                             throw new Exception($"No coordinates found for city: {city}");
 
@@ -248,11 +241,9 @@ namespace ItineraryServer
 
         private async Task<RouteResponse> GetFootRoute((double lat, double lon) station1, (double lat, double lon) station2)
         {
-            var client = new HttpClient();
             string url = $"{urlRoadFoot}&start={station1.lon.ToString(CultureInfo.InvariantCulture)},{station1.lat.ToString(CultureInfo.InvariantCulture)}&end={station2.lon.ToString(CultureInfo.InvariantCulture)},{station2.lat.ToString(CultureInfo.InvariantCulture)}";
-            Trace.WriteLine(url);
-            var response = await client.GetStringAsync(url);
-            RouteResponse road = JsonSerializer.Deserialize<RouteResponse>(response);
+            RouteResponse road = CacheRoute.Get(url, 180).Result;
+            
             Trace.WriteLine(road.ToString());
 
             // Parse response and extract route instructions (simplified for brevity)
@@ -260,14 +251,11 @@ namespace ItineraryServer
         }
         private async Task<RouteResponse> GetBikeRoute((double lat, double lon) station1, (double lat, double lon) station2)
         {
-            var client = new HttpClient();
             string url = $"{urlRoadFoot}&start={station1.lon.ToString(CultureInfo.InvariantCulture)},{station1.lat.ToString(CultureInfo.InvariantCulture)}&end={station2.lon.ToString(CultureInfo.InvariantCulture)},{station2.lat.ToString(CultureInfo.InvariantCulture)}";
-            var response = await client.GetStringAsync(url);
-            RouteResponse road = JsonSerializer.Deserialize<RouteResponse>(response);
+            RouteResponse road = CacheRoute.Get(url, 180).Result;
             Trace.WriteLine(road.ToString());
 
-            // Parse response and extract route instructions (simplified for brevity)
-            return road; // Example response
+            return road;
         }
 
         private (double lat, double lon) ParseCoordinates(string coords)
@@ -376,7 +364,7 @@ namespace ItineraryServer
     {
         public string type { get; set; }
         public Geometry geometry { get; set; }
-        public Properties properties { get; set; }
+        public Properties1 properties { get; set; }
         public String ToString()
         {
             return "Type: " + type + ", Geometry: " + geometry.ToString() + ", Properties: " + properties.ToString();
@@ -393,7 +381,7 @@ namespace ItineraryServer
         }
     }
 
-    public class Properties
+    public class Properties1
     {
         public string label { get; set; }
         public double score { get; set; }
