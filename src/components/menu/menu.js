@@ -28,7 +28,7 @@ class Menu extends HTMLElement {
                     const start = this.shadowRoot.querySelector('my-input').shadowRoot.querySelector('.custom-input').value;
                     const end = this.shadowRoot.querySelectorAll('my-input')[1].shadowRoot.querySelector('.custom-input').value;
                     console.log(start, end);
-                    calculatePath(start, end);
+                    calculatePath(start, end, 'start');
                 }
             })
             .catch(error => {

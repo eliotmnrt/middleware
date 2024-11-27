@@ -11,13 +11,14 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web.Routing;
 
 namespace ItineraryServer
 {
     // REMARQUE : vous pouvez utiliser la commande Renommer du menu Refactoriser pour changer le nom de classe "Service1" à la fois dans le code et le fichier de configuration.
     public class StationService : IStationService
     {
-        Regex coordsRegex = new Regex(@"/^-?\d{1,2}\.\d+$/", RegexOptions.Compiled);
+        Regex coordsRegex = new Regex(@"^-?\d{1,3}\.\d+,-?\d{1,3}\.\d+$", RegexOptions.Compiled);
         HttpClient client = new HttpClient();
         String apiKey = "&apiKey=1b6b6bf226341d91b3d0749ee3d52a71049b7a17";
         String urlContracts = "https://api.jcdecaux.com/vls/v3/contracts?";
@@ -25,56 +26,87 @@ namespace ItineraryServer
         String urlRoadBike = "https://api.openrouteservice.org/v2/directions/cycling-regular?api_key=5b3ce3597851110001cf62482e4596c77c6c41079fbec41de976c380";
         String urlRoadFoot = "https://api.openrouteservice.org/v2/directions/foot-walking?api_key=5b3ce3597851110001cf62482e4596c77c6c41079fbec41de976c380";
         String urlDataGouv = "https://api-adresse.data.gouv.fr/search/";
-
+        bool setUpNeeded = true;
         List<Contract> allContracts = null;
         ISession session = null;
 
-        public String GetItinerary(string address1, string address2)
+        public String GetItinerary(string address1, string address2, string step)
         {
             if (address1 == null || address2 == null)
             {
                 return "error departure or arrival";
             }
-            setUp();
-            var coords1 = (0.0, 0.0);
-            var coords2 = (0.0, 0.0);
-            if (!coordsRegex.IsMatch(address1) || !coordsRegex.IsMatch(address2))
+            if (setUpNeeded)
             {
-                coords1 = GetCoordinates(address1).Result;
-                coords2 = GetCoordinates(address2).Result;
+                setUp();
+                setUpNeeded = false;
+            }
+
+            var startCoords = (0.0, 0.0);
+            var endCoords = (0.0, 0.0);
+            Trace.WriteLine(address1 + " " + address2);
+            if (!coordsRegex.IsMatch(address1))
+            {
+                startCoords = GetCoordinates(address1).Result;
             } else
             {
-                coords1 = ParseCoordinates(address1);
-                coords2 = ParseCoordinates(address2);
+                Trace.WriteLine("parsing...");
+                startCoords = ParseCoordinates(address1);
             }
+
+            if (!coordsRegex.IsMatch(address2))
+            {
+                endCoords = GetCoordinates(address2).Result;
+            }
+            else
+            {
+                Trace.WriteLine("parsing...");
+                endCoords = ParseCoordinates(address2);
+            }
+
+            Trace.WriteLine("coords :" + startCoords + ", " + endCoords);
             
 
             // Find nearest JCDecaux stations
-            var station1 = GetNearestStation(coords1).Result;
-            var station2 = GetNearestStation(coords2).Result;
-            
-            // Generate route between stations
-            var route1 = GetFootRoute(coords1, station1).Result;
-            var route2 = GetBikeRoute(station1, station2).Result;
-            var route3 = GetFootRoute(station2, coords2).Result;
-
-            var footPath = GetFootRoute(coords1, coords2).Result;
+            var stationDepart = GetNearestStation(startCoords).Result;
+            var stationArrivée = GetNearestStation(endCoords).Result;
 
             List<Feature> rep = new List<Feature>();
-            double total = route1.features[0].properties.summary.duration + route2.features[0].properties.summary.duration + route3.features[0].properties.summary.duration;
 
-            Trace.WriteLine(total);
-            Trace.WriteLine(footPath.features[0].properties.summary.duration);
-            if (footPath.features[0].properties.summary.duration < route1.features[0].properties.summary.duration + route2.features[0].properties.summary.duration + route3.features[0].properties.summary.duration)
+            Trace.WriteLine(step);
+
+            // Generate route between stations
+            if (step == "start" || step == "foot")
+            {
+                var route1 = GetFootRoute(startCoords, stationDepart).Result;
+                var route2 = GetBikeRoute(stationDepart, stationArrivée).Result;
+                var route3 = GetFootRoute(stationArrivée, endCoords).Result;
+
+                rep.Add(route1.features[0]);
+                rep.Add(route2.features[0]);    
+                rep.Add(route3.features[0]);
+            } else if (step == "bike")
+            {
+                var route2 = GetBikeRoute(startCoords, stationArrivée).Result;
+                var route3 = GetFootRoute(stationArrivée, endCoords).Result;
+
+                rep.Add(route2.features[0]);
+                rep.Add(route3.features[0]);
+            }
+            
+            var footPath = GetFootRoute(startCoords, endCoords).Result;
+
+            double totalTime = rep.Select(feature => feature.properties.summary.duration).Sum();
+            Trace.WriteLine(totalTime + " " + footPath.features[0].properties.summary.duration);
+            if (footPath.features[0].properties.summary.duration < totalTime)
             {
                 Trace.WriteLine("Chemin à pied plus court");
+                rep = new List<Feature>();
                 rep.Add(footPath.features[0]);
             } else
             {
                 Trace.WriteLine("Chemin à velo plus court");
-                rep.Add(route1.features[0]);
-                rep.Add(route2.features[0]);
-                rep.Add(route3.features[0]);
+                
             }
 
             SendToQueue(JsonSerializer.Serialize(rep));
@@ -116,8 +148,6 @@ namespace ItineraryServer
                 // Créer un producteur pour cette queue
                 using (IMessageProducer producer = session.CreateProducer(destination))
                 {
-                    Trace.WriteLine("hellooooooooooooooooooooo");
-
                     producer.DeliveryMode = MsgDeliveryMode.NonPersistent;
 
                     // Créer et envoyer le message
@@ -138,7 +168,6 @@ namespace ItineraryServer
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
             List<Contract> allContracts = JsonSerializer.Deserialize<List<Contract>>(responseBody);
-            allContracts.ForEach(contrat => Trace.WriteLine(contrat.ToString()));
             List<Contract> contractWithStations = new List<Contract>();
             foreach (Contract contract in allContracts)
             {
@@ -198,7 +227,6 @@ namespace ItineraryServer
                     nearestStation = station;
                 }
             }
-            Trace.WriteLine("nearest station" + nearestStation.ToString());
             return (nearestStation.position.latitude, nearestStation.position.longitude);
         }
 
@@ -264,27 +292,30 @@ namespace ItineraryServer
             Trace.WriteLine(url);
             var response = await client.GetStringAsync(url);
             RouteResponse road = JsonSerializer.Deserialize<RouteResponse>(response);
-            Trace.WriteLine(road.ToString());
+            road.features[0].type = "foot";
 
-            // Parse response and extract route instructions (simplified for brevity)
             return road; // Example response
         }
         private async Task<RouteResponse> GetBikeRoute((double lat, double lon) station1, (double lat, double lon) station2)
         {
             var client = new HttpClient();
-            string url = $"{urlRoadFoot}&start={station1.lon.ToString(CultureInfo.InvariantCulture)},{station1.lat.ToString(CultureInfo.InvariantCulture)}&end={station2.lon.ToString(CultureInfo.InvariantCulture)},{station2.lat.ToString(CultureInfo.InvariantCulture)}";
+            string url = $"{urlRoadBike}&start={station1.lon.ToString(CultureInfo.InvariantCulture)},{station1.lat.ToString(CultureInfo.InvariantCulture)}&end={station2.lon.ToString(CultureInfo.InvariantCulture)},{station2.lat.ToString(CultureInfo.InvariantCulture)}";
+            Trace.WriteLine(url);
             var response = await client.GetStringAsync(url);
             RouteResponse road = JsonSerializer.Deserialize<RouteResponse>(response);
-            Trace.WriteLine(road.ToString());
+            road.features[0].type = "bike";
 
-            // Parse response and extract route instructions (simplified for brevity)
             return road; // Example response
         }
 
         private (double lat, double lon) ParseCoordinates(string coords)
         {
-            var cleanCoords = coords.Trim('[', ']').Split(',');
-            return (double.Parse(cleanCoords[1]), double.Parse(cleanCoords[0]));
+            var cleanCoords = coords.Split(',');
+            Trace.WriteLine(cleanCoords[1].ToString());
+            
+            double lat = double.Parse(cleanCoords[1], CultureInfo.InvariantCulture);
+            double lon = double.Parse(cleanCoords[0], CultureInfo.InvariantCulture);
+            return (lat, lon);
         }
     }
 

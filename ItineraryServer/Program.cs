@@ -41,8 +41,7 @@ namespace ItineraryServer
             //Start the Service
             host.Open();
 
-            StationService stationService = new StationService();
-            stationService.setUp();
+            
 
             Console.WriteLine("Service is host at " + DateTime.Now.ToString());
             Console.WriteLine("Host is running... Press <Enter> key to stop");

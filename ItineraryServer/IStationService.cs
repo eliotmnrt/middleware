@@ -13,8 +13,8 @@ namespace ItineraryServer
     public interface IStationService
     {
         [OperationContract]
-        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json, UriTemplate = "/CalculateItinerary?departure={departure}&arrival={arrival}")]
-        String GetItinerary(string departure, string arrival);
+        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json, UriTemplate = "/CalculateItinerary?departure={departure}&arrival={arrival}&step={step}")]
+        String GetItinerary(string departure, string arrival, string step);
 
     }
 }
