@@ -1,0 +1,69 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\eliot\\source\\repos\\ProxyCache\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2449FE8E-0A29-4424-B186-9957F33D7F6A}|ProxyCache.csproj|c:\\users\\eliot\\source\\repos\\proxycache\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2449FE8E-0A29-4424-B186-9957F33D7F6A}|ProxyCache.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2449FE8E-0A29-4424-B186-9957F33D7F6A}|ProxyCache.csproj|C:\\Users\\eliot\\source\\repos\\ProxyCache\\igenericproxycache.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2449FE8E-0A29-4424-B186-9957F33D7F6A}|ProxyCache.csproj|solutionrelative:igenericproxycache.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2449FE8E-0A29-4424-B186-9957F33D7F6A}|ProxyCache.csproj|C:\\Users\\eliot\\source\\repos\\ProxyCache\\genericproxycache.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2449FE8E-0A29-4424-B186-9957F33D7F6A}|ProxyCache.csproj|solutionrelative:genericproxycache.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "GenericProxyCache.cs",
+              "DocumentMoniker": "C:\\Users\\eliot\\source\\repos\\ProxyCache\\GenericProxyCache.cs",
+              "RelativeDocumentMoniker": "GenericProxyCache.cs",
+              "ToolTip": "C:\\Users\\eliot\\source\\repos\\ProxyCache\\GenericProxyCache.cs",
+              "RelativeToolTip": "GenericProxyCache.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAACYAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-27T16:30:17.131Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "IGenericProxyCache.cs",
+              "DocumentMoniker": "C:\\Users\\eliot\\source\\repos\\ProxyCache\\IGenericProxyCache.cs",
+              "RelativeDocumentMoniker": "IGenericProxyCache.cs",
+              "ToolTip": "C:\\Users\\eliot\\source\\repos\\ProxyCache\\IGenericProxyCache.cs",
+              "RelativeToolTip": "IGenericProxyCache.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-27T16:29:41.488Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\eliot\\source\\repos\\ProxyCache\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\eliot\\source\\repos\\ProxyCache\\Program.cs*",
+              "RelativeToolTip": "Program.cs*",
+              "ViewState": "AgIAADQAAAAAAAAAAAAowDoAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-27T16:28:58.177Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

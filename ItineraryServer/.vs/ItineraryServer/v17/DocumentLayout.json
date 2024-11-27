@@ -42,8 +42,7 @@
               "RelativeToolTip": "Properties\\AssemblyInfo.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-24T19:25:35.86Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-24T19:25:35.86Z"
             },
             {
               "$type": "Document",
@@ -65,7 +64,7 @@
               "RelativeDocumentMoniker": "StationService.cs",
               "ToolTip": "C:\\Users\\eliot\\IdeaProjects\\middleware\\ItineraryServer\\StationService.cs",
               "RelativeToolTip": "StationService.cs",
-              "ViewState": "AgIAAHYAAAAAAAAAAAAAAFUAAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAAHcAAAAAAAAAAAAqwFUAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-11-23T16:08:24.322Z",
               "EditorCaption": ""
@@ -80,8 +79,7 @@
               "RelativeToolTip": "IStationService.cs",
               "ViewState": "AgIAAAYAAAAAAAAAAAAqwA8AAAChAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-23T16:08:08.448Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-23T16:08:08.448Z"
             },
             {
               "$type": "Document",
@@ -93,8 +91,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAABwAAAAAAAAAAAAQwCsAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-23T16:07:06.38Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-23T16:07:06.38Z"
             }
           ]
         }
