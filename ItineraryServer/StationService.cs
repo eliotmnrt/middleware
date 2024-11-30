@@ -320,7 +320,7 @@ namespace ItineraryServer
         private (double lat, double lon) ParseCoordinates(string coords)
         {
             var cleanCoords = coords.Split(',');
-            Trace.WriteLine(cleanCoords[1].ToString());
+            Trace.WriteLine("cleanCoords" + cleanCoords[1].ToString());
             
             double lat = double.Parse(cleanCoords[1], CultureInfo.InvariantCulture);
             double lon = double.Parse(cleanCoords[0], CultureInfo.InvariantCulture);

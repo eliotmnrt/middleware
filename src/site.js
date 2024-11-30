@@ -118,9 +118,9 @@ if (window.WebSocket) {
                 path = [];
                 let totalSteps = 0;
                 let nbDisplaySteps = 10;
-                for (let i = 0; i < response.length; i++) {
+                for (const element of response) {
                     let partOfPath = [];
-                    const data = response[i];
+                    const data = element;
                     console.log(data.properties.segments[0].steps);
                     const way = data.type;
                     console.log(way);

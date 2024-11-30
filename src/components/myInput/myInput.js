@@ -32,10 +32,15 @@ class MyInput extends HTMLElement {
                     suggestion.setAttribute('class', 'suggestion');
                     suggestion.textContent = feature.properties.label;
                     suggestion.addEventListener('click', () => {
+                        // Récupérer les coordonnées du point
+                        const lat = parseFloat(feature.geometry.coordinates[1]);
+                        const lon = parseFloat(feature.geometry.coordinates[0]);
                         customInput.value = feature.properties.label;
-                        customInput.setAttribute('data-lon', feature.geometry.coordinates[0]);
-                        customInput.setAttribute('data-lat', feature.geometry.coordinates[1]);
+                        customInput.setAttribute('data-lat', ""+lat);
+                        customInput.setAttribute('data-lon', ""+lon);
+
                         resetSuggestions();
+                        updateMapView();
                     });
                     suggestionsContainer.appendChild(suggestion);
                 }
@@ -89,6 +94,29 @@ class MyInput extends HTMLElement {
             }) .catch(error => {
             console.error('Error loading template:', error);
         });
+    }
+}
+
+// Fonction pour recentrer la carte
+function    updateMapView() {
+    const lat1 = parseFloat(document.querySelector('my-menu').shadowRoot.querySelectorAll('my-input')[0].shadowRoot.querySelector('.custom-input').getAttribute('data-lat'));
+    const lon1 = parseFloat(document.querySelector('my-menu').shadowRoot.querySelectorAll('my-input')[0].shadowRoot.querySelector('.custom-input').getAttribute('data-lon'));
+    const lat2 = parseFloat(document.querySelector('my-menu').shadowRoot.querySelectorAll('my-input')[1].shadowRoot.querySelector('.custom-input').getAttribute('data-lat'));
+    const lon2 = parseFloat(document.querySelector('my-menu').shadowRoot.querySelectorAll('my-input')[1].shadowRoot.querySelector('.custom-input').getAttribute('data-lon'));
+
+    if (!isNaN(lat1) && !isNaN(lon1)) {
+        map.setView([lat1, lon1], 15); // Niveau de zoom ajustable (15 ici)
+        L.marker([lat1, lon1]).addTo(window.map);
+    }
+
+    if (!isNaN(lat2) && !isNaN(lon2)) {
+        map.setView([lat2, lon2], 15); // Niveau de zoom ajustable (15 ici)
+        L.marker([lat2, lon2]).addTo(window.map);
+    }
+
+    if(!isNaN(lat1) && !isNaN(lon1) && !isNaN(lat2) && !isNaN(lon2)){
+        const bounds = L.latLngBounds([lat1, lon1],[lat2, lon2]);
+        map.fitBounds(bounds);
     }
 }
 
