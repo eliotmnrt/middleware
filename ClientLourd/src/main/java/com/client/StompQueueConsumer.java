@@ -23,10 +23,6 @@ public class StompQueueConsumer {
         QueueConsumer consumer = new QueueConsumer(new QueueConsumer.MessageListener() {
             @Override
             public void onMessage(String message) throws JsonProcessingException {
-                // Handle the received message here
-                System.out.println("Message received in main: " + message);
-
-                // Pass the message to another class or process it
                 MyMessageProcessor.processMessage(message);
             }
         });
@@ -59,7 +55,7 @@ public class StompQueueConsumer {
 
                 if (message instanceof TextMessage) {
                     String text = ((TextMessage) message).getText();
-                    System.out.println("Received: " + text);
+                    System.out.println("Received:");
 
                     // Notify the listener
                     if (listener != null) {
@@ -81,7 +77,7 @@ public class StompQueueConsumer {
             System.out.println("JMS Exception occurred. Shutting down client.");
         }
 
-        public interface MessageListener {
+        public interface    MessageListener {
             void onMessage(String message) throws JsonProcessingException;
         }
     }
@@ -107,7 +103,6 @@ public class StompQueueConsumer {
                     System.out.println("Coordinates node is not an array.");
                 }
             }
-            System.out.println("points" + route);
             App.updateMapWithRoute(route);
         }
     }

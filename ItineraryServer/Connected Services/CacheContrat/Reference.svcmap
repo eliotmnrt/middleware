@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ID="4c456086-38fd-453e-af77-37435fefbd64" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:8034/Proxy/Contrats?wsdl" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="Contrats.xsd" MetadataType="Schema" ID="ee16b0c6-62f8-4545-908c-ee1254551a0d" SourceId="1" SourceUrl="http://localhost:8034/Proxy/Contrats?xsd=xsd4" />
+    <MetadataFile FileName="Contrats1.xsd" MetadataType="Schema" ID="a8e73a3f-4674-4d94-9f52-82e70933a4e6" SourceId="1" SourceUrl="http://localhost:8034/Proxy/Contrats?xsd=xsd3" />
+    <MetadataFile FileName="Contrats2.xsd" MetadataType="Schema" ID="2874cd8b-7fce-45fc-a7ac-3ba417ab09c1" SourceId="1" SourceUrl="http://localhost:8034/Proxy/Contrats?xsd=xsd2" />
+    <MetadataFile FileName="Contrats3.xsd" MetadataType="Schema" ID="9557b314-27b1-4b56-9a18-eb8a95526b67" SourceId="1" SourceUrl="http://localhost:8034/Proxy/Contrats?xsd=xsd1" />
+    <MetadataFile FileName="Contrats4.xsd" MetadataType="Schema" ID="8638c6a1-9bff-401f-a489-a7455abf020c" SourceId="1" SourceUrl="http://localhost:8034/Proxy/Contrats?xsd=xsd0" />
+    <MetadataFile FileName="GenericProxyCache_x0060_1.wsdl" MetadataType="Wsdl" ID="4e694bd5-20a2-4dc6-a5f5-2cec0559ee83" SourceId="1" SourceUrl="http://localhost:8034/Proxy/Contrats?wsdl" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

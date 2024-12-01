@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.ServiceModel.PeerResolvers;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -15,7 +16,6 @@ using System.Web.Routing;
 
 namespace ItineraryServer
 {
-    // REMARQUE : vous pouvez utiliser la commande Renommer du menu Refactoriser pour changer le nom de classe "Service1" à la fois dans le code et le fichier de configuration.
     public class StationService : IStationService, IStationServiceSoap
     {
         Regex coordsRegex = new Regex(@"^-?\d{1,3}\.\d+,-?\d{1,3}\.\d+$", RegexOptions.Compiled);
@@ -29,6 +29,8 @@ namespace ItineraryServer
         bool setUpNeeded = true;
         List<Contract> allContracts = null;
         ISession session = null;
+        ProxyCache.GenericProxyCacheOf_StringClient Proxy_Cache = new ProxyCache.GenericProxyCacheOf_StringClient();
+
 
         public String GetItinerary(string address1, string address2, string step)
         {
@@ -164,17 +166,22 @@ namespace ItineraryServer
 
         public async Task<List<Contract>> getAllContracts()
         {
-            HttpResponseMessage response = await client.GetAsync(urlContracts + apiKey);
-            response.EnsureSuccessStatusCode();
-            string responseBody = await response.Content.ReadAsStringAsync();
-            List<Contract> allContracts = JsonSerializer.Deserialize<List<Contract>>(responseBody);
+            //HttpResponseMessage response = await client.GetAsync(urlContracts + apiKey);
+            //response.EnsureSuccessStatusCode();
+            //string responseBody = await response.Content.ReadAsStringAsync();
+            string responseContrats = Proxy_Cache.Get(urlContracts + apiKey);
+            Trace.WriteLine($"{responseContrats}");
+            List<Contract> allContracts = JsonSerializer.Deserialize<List<Contract>>(responseContrats);
             List<Contract> contractWithStations = new List<Contract>();
             foreach (Contract contract in allContracts)
             {
                 string url = urlStation + "?contract=" + contract.name + apiKey;
-                HttpResponseMessage stationResponse = await client.GetAsync(url);
-                var allStations = await stationResponse.Content.ReadAsStringAsync();
-                List<Station> stationsOfContract = JsonSerializer.Deserialize<List<Station>>(allStations);
+                //HttpResponseMessage stationResponse = await client.GetAsync(url);
+                //var allStations = await stationResponse.Content.ReadAsStringAsync();
+                string responseStations = Proxy_Cache.GetWithExpiration(url, 180);
+                Trace.WriteLine($"{responseStations}");
+
+                List<Station> stationsOfContract = JsonSerializer.Deserialize<List<Station>>(responseStations);
                 if( stationsOfContract != null)
                 {
                     if (stationsOfContract.Count > 0)
@@ -197,23 +204,22 @@ namespace ItineraryServer
 
         private async Task<(double lat, double lon)> GetCoordinates(string address)
         {
-            var client = new HttpClient();
             String start = address.Replace(" ", "+");
             String url = urlDataGouv + "?q=" + start + "&limit=1";
-            String response = await client.GetStringAsync(url);
+            String response = Proxy_Cache.Get(url);
             GeoFeatureCollection result = JsonSerializer.Deserialize<GeoFeatureCollection>(response);
             return (result.features[0].geometry.coordinates[1], result.features[0].geometry.coordinates[0]); //inversion lat/long
         }
 
         private async Task<(double lat, double lon)> GetNearestStation((double lat, double lon) coords)
         {
-            var client = new HttpClient();
             var nearestContract = GetNearestContract(coords).Result;
             Trace.WriteLine("nearest contract" + nearestContract.ToString());
             string url = urlStation + "?contract=" + nearestContract.name + apiKey;
-            HttpResponseMessage stations = await client.GetAsync(url);
-            var allStations = await stations.Content.ReadAsStringAsync();
-            List<Station> stationsOfContract = JsonSerializer.Deserialize<List<Station>>(allStations);
+            //HttpResponseMessage stations = await client.GetAsync(url);
+            //var allStations = await stations.Content.ReadAsStringAsync();
+            string responseStations = Proxy_Cache.GetWithExpiration(url, 180);
+            List<Station> stationsOfContract = JsonSerializer.Deserialize<List<Station>>(responseStations);
 
             Station nearestStation = null;
             double nearestDistance = double.MaxValue;
@@ -242,8 +248,9 @@ namespace ItineraryServer
                     foreach (String city in contract.cities)
                     {
                         string url = urlDataGouv + "?q=" + city + "&limit=1";
-                        HttpResponseMessage response = await client.GetAsync(url);
-                        string responseBody = await response.Content.ReadAsStringAsync();
+                        //HttpResponseMessage response = await client.GetAsync(url);
+                        //string responseBody = await response.Content.ReadAsStringAsync();
+                        string responseBody = Proxy_Cache.Get(url);
                         var results = JsonSerializer.Deserialize<GeoFeatureCollection>(responseBody);
                         if (results == null)
                             throw new Exception($"No coordinates found for city: {city}");
@@ -287,10 +294,11 @@ namespace ItineraryServer
 
         private async Task<RouteResponse> GetFootRoute((double lat, double lon) station1, (double lat, double lon) station2)
         {
-            var client = new HttpClient();
+            //var client = new HttpClient();
             string url = $"{urlRoadFoot}&start={station1.lon.ToString(CultureInfo.InvariantCulture)},{station1.lat.ToString(CultureInfo.InvariantCulture)}&end={station2.lon.ToString(CultureInfo.InvariantCulture)},{station2.lat.ToString(CultureInfo.InvariantCulture)}";
             Trace.WriteLine(url);
-            var response = await client.GetStringAsync(url);
+            //var response = await client.GetStringAsync(url);
+            string response = Proxy_Cache.GetWithExpiration(url, 180);
             RouteResponse road = JsonSerializer.Deserialize<RouteResponse>(response);
             road.features[0].type = "foot";
 
@@ -298,10 +306,11 @@ namespace ItineraryServer
         }
         private async Task<RouteResponse> GetBikeRoute((double lat, double lon) station1, (double lat, double lon) station2)
         {
-            var client = new HttpClient();
+            //var client = new HttpClient();
             string url = $"{urlRoadBike}&start={station1.lon.ToString(CultureInfo.InvariantCulture)},{station1.lat.ToString(CultureInfo.InvariantCulture)}&end={station2.lon.ToString(CultureInfo.InvariantCulture)},{station2.lat.ToString(CultureInfo.InvariantCulture)}";
             Trace.WriteLine(url);
-            var response = await client.GetStringAsync(url);
+            //var response = await client.GetStringAsync(url);
+            string response = Proxy_Cache.GetWithExpiration(url, 180);
             RouteResponse road = JsonSerializer.Deserialize<RouteResponse>(response);
             road.features[0].type = "bike";
 

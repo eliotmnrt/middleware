@@ -31,8 +31,12 @@ namespace ItineraryServer
             // ServiceHost host = new ServiceHost(typeof(MyCalculatorService.SimpleCalculator), httpUrl, tcpUrl);
 
             //Add a service endpoint
+            WebHttpBinding binding = new WebHttpBinding
+            {
+                MaxReceivedMessageSize = 10 * 1024 * 1024, // 10 MB
+            };
 
-            ServiceEndpoint endpoint = host.AddServiceEndpoint(typeof(IStationService), new WebHttpBinding(), "");
+            ServiceEndpoint endpoint = host.AddServiceEndpoint(typeof(IStationService), binding, "");
             endpoint.EndpointBehaviors.Add(new WebHttpBehavior());
 
             ServiceEndpoint endpointSoap = hostSoap.AddServiceEndpoint(typeof(IStationServiceSoap), new BasicHttpBinding(), "");
