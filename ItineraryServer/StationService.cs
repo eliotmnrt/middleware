@@ -16,7 +16,7 @@ using System.Web.Routing;
 
 namespace ItineraryServer
 {
-    public class StationService : IStationService
+    public class StationService : IStationService, IStationServiceSoap
     {
         Regex coordsRegex = new Regex(@"^-?\d{1,3}\.\d+,-?\d{1,3}\.\d+$", RegexOptions.Compiled);
         HttpClient client = new HttpClient();

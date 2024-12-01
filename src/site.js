@@ -60,7 +60,7 @@ async function consumeSteps() {
         stepContainer.removeChild(stepContainer.firstChild);
         remainingSteps--;
     } else if (0 < stepContainer.childElementCount < 3 && remainingSteps > 3) {
-        const step= stepContainer.firstChild;
+        const step= stepContainer.lastChild;
         const point = step.attributes['point'].value;
         const end = document.querySelector("my-menu").shadowRoot.querySelectorAll('my-input')[1].shadowRoot.querySelector('.custom-input').value;
         remainingSteps = calculatePath(path[point], end, step.attributes['way'].value);

@@ -1,0 +1,7 @@
+com\client\IStationServiceSoap.class
+com\client\package-info.class
+com\client\GetItineraryResponse.class
+com\client\ObjectFactory.class
+com\client\App.class
+com\client\GetItinerary.class
+com\client\StationService.class
