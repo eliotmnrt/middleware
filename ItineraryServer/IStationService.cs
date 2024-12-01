@@ -15,6 +15,12 @@ namespace ItineraryServer
         [OperationContract]
         [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json, UriTemplate = "/CalculateItinerary?departure={departure}&arrival={arrival}&step={step}")]
         String GetItinerary(string departure, string arrival, string step);
+    }
 
+    [ServiceContract]
+    public interface IStationServiceSoap
+    {
+        [OperationContract]
+        String GetItinerary(string departure, string arrival, string step);
     }
 }

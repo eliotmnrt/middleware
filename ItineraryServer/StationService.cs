@@ -16,7 +16,7 @@ using System.Web.Routing;
 namespace ItineraryServer
 {
     // REMARQUE : vous pouvez utiliser la commande Renommer du menu Refactoriser pour changer le nom de classe "Service1" à la fois dans le code et le fichier de configuration.
-    public class StationService : IStationService
+    public class StationService : IStationService, IStationServiceSoap
     {
         Regex coordsRegex = new Regex(@"^-?\d{1,3}\.\d+,-?\d{1,3}\.\d+$", RegexOptions.Compiled);
         HttpClient client = new HttpClient();
