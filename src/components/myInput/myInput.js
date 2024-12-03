@@ -90,6 +90,11 @@ class MyInput extends HTMLElement {
 
                 // Fetch suggestions when the input value changes
                 customInput.addEventListener('input', () => fetchSuggestions(customInput.value));
+                const infoIcon= shadow.querySelector('.info-icon');
+                infoIcon.addEventListener('click', () => {
+                    alert('Ceci est un champ de saisie pour les adresses');
+                });
+
 
             }) .catch(error => {
             console.error('Error loading template:', error);

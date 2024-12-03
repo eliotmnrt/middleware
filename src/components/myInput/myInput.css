@@ -11,6 +11,15 @@
     padding-left: 4px;
 
 }
+img{
+    width: 12px;
+    position: absolute;
+    left: 255px;
+    margin-top: 16px;
+}
+.info-icon:hover{
+    cursor: pointer;
+}
 .custom-input:focus{
     border-color: #8c52ff;
     border-width: 2px;
@@ -25,7 +34,7 @@ img.deco{
     z-index: 2000;
     margin: 0;
     padding:0;
-    width: 241px;
+    width: 230px;
     list-style: none;
     background-color: #f5f5f5;
     border-radius: 5px;
