@@ -1,0 +1,26 @@
+.step-number{
+    font-size: 17px;
+    font-weight: bold;
+    color: #011a36;
+    display: flex;
+    align-items: center;
+    height: 28px;
+}
+.step-style{
+    padding: 5px;
+    margin-bottom: 10px;
+}
+.step-instruction{
+    margin-top: 3px;
+    font-size: 16px;
+}
+.step-distance{
+    margin-top: 5px;
+    font-style: italic;
+    font-size: 16px;
+}
+.step-time{
+    font-weight: normal;
+    font-size: 17px;
+
+}

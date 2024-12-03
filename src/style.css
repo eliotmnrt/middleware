@@ -155,3 +155,18 @@ img.origin-dest{
 #coordinates{
     margin-top: 15px;
 }
+#trajet-temps{
+    background-color: #597c8e;
+    position: absolute;
+    z-index: 900;
+    padding: 10px;
+    border-radius: 8px;
+    color: white;
+    height: 20px;
+    width: 150px;
+    top: 100px;
+    right: 10px;
+    border: #2f4156 solid 2px;
+    font-weight: bold;
+    display: none;
+}

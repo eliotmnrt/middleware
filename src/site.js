@@ -113,7 +113,9 @@ if (window.WebSocket) {
                 path = [];
                 let totalSteps = 0;
                 let nbDisplaySteps = 10;
+                let totalTime = 0;
                 for (const element of response) {
+                    totalTime += element.properties.summary.duration;
                     let partOfPath = [];
                     const data = element;
                     console.log(data.properties.segments[0].steps);
@@ -128,7 +130,8 @@ if (window.WebSocket) {
                         if (nbDisplaySteps > 0) {
                             const stepElement = document.createElement('my-step');
                             console.log('instruction' + step.instruction);
-                            stepElement.setAttribute('placeholder', `${k + 1}. ` + step.instruction);
+                            stepElement.setAttribute('instruction', step.instruction);
+                            stepElement.setAttribute("stepNumber", k+1);
                             stepElement.setAttribute("time", step.duration);
                             stepElement.setAttribute("distance", step.distance);
                             stepElement.setAttribute('point', step.way_points[1]);
@@ -142,8 +145,6 @@ if (window.WebSocket) {
                         lastPoint = step.way_points[1];
 
                         const startCoords = data.geometry.coordinates[startPoint];
-                        //const marker = L.marker([startCoords[1], startCoords[0]]).addTo(window.map);
-                        //stepMarkers.push(marker);
 
                         for (let i=startPoint; i<lastPoint; i++){
                             partOfPath.push(data.geometry.coordinates[i]);
@@ -157,6 +158,17 @@ if (window.WebSocket) {
                     const bounds = L.latLngBounds([response[0].geometry.coordinates[0][1], response[0].geometry.coordinates[0][0]],[data.geometry.coordinates[lastPoint][1], data.geometry.coordinates[lastPoint][0]]);
                     map.fitBounds(bounds);
                 }
+                const totalTimeComponent= document.querySelector("#trajet-temps");
+                realTotalTime = Math.floor(totalTime/60);
+                if(realTotalTime>60){
+                    totalTimeComponent.innerHTML = "Time: "+Math.floor(realTotalTime/60)+" h "+realTotalTime%60+" min";
+                    totalTimeComponent.style.display = 'block';
+                }
+                else {
+                    totalTimeComponent.innerHTML = "Time: " + Math.floor(totalTime / 60) + " min";
+                    totalTimeComponent.style.display = 'block';
+                }
+
 
                 remainingSteps = totalSteps.length;
                 startConsumingSteps();
