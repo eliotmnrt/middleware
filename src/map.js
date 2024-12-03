@@ -87,7 +87,7 @@ setMap().then(r => {
 // Ajouter un gestionnaire d'événements pour les clics sur la carte
     map.on('click', function (e) {
         console.log("remaining Steps: "+remainingSteps);
-        if(remainingSteps != 0) {
+        if(remainingSteps !== 0 && stepContainer.childElementCount > 0) {
             return;
         }
         const departureInput = document.querySelector('my-menu').shadowRoot.querySelectorAll('my-input')[0].shadowRoot.querySelector('.custom-input')

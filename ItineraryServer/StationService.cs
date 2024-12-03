@@ -16,7 +16,7 @@ using System.Web.Routing;
 
 namespace ItineraryServer
 {
-    public class StationService : IStationService
+    public class StationService : IStationService, IStationServiceSoap
     {
         Regex coordsRegex = new Regex(@"^-?\d{1,3}\.\d+,-?\d{1,3}\.\d+$", RegexOptions.Compiled);
         HttpClient client = new HttpClient();
@@ -34,94 +34,101 @@ namespace ItineraryServer
 
         public String GetItinerary(string address1, string address2, string step)
         {
-            if (address1 == null || address2 == null)
+            try
             {
-                return "error departure or arrival";
-            }
-            if (setUpNeeded)
-            {
-                setUp();
-                setUpNeeded = false;
-            }
+                if (address1 == null || address2 == null)
+                {
+                    return "error departure or arrival";
+                }
+                if (setUpNeeded)
+                {
+                    setUp();
+                    setUpNeeded = false;
+                }
 
-            var startCoords = (0.0, 0.0);
-            var endCoords = (0.0, 0.0);
-            Trace.WriteLine(address1 + " " + address2);
-            if (!coordsRegex.IsMatch(address1))
-            {
-                startCoords = GetCoordinates(address1).Result;
-            } else
-            {
-                Trace.WriteLine("parsing...");
-                startCoords = ParseCoordinates(address1);
-            }
+                var startCoords = (0.0, 0.0);
+                var endCoords = (0.0, 0.0);
+                Trace.WriteLine(address1 + " " + address2);
+                if (!coordsRegex.IsMatch(address1))
+                {
+                    startCoords = GetCoordinates(address1).Result;
+                }
+                else
+                {
+                    startCoords = ParseCoordinates(address1);
+                }
 
-            if (!coordsRegex.IsMatch(address2))
-            {
-                endCoords = GetCoordinates(address2).Result;
-            }
-            else
-            {
-                Trace.WriteLine("parsing...");
-                endCoords = ParseCoordinates(address2);
-            }
+                if (!coordsRegex.IsMatch(address2))
+                {
+                    endCoords = GetCoordinates(address2).Result;
+                }
+                else
+                {
+                    endCoords = ParseCoordinates(address2);
+                }
 
-            Trace.WriteLine("coords :" + startCoords + ", " + endCoords);
+                Trace.WriteLine("coords :" + startCoords + ", " + endCoords);
+
+
+                // Find nearest JCDecaux stations
+                var stationDepart = GetNearestStation(startCoords, "départ").Result;
+                var stationArrivée = GetNearestStation(endCoords, "arrivée").Result;
+
+                List<Feature> rep = new List<Feature>();
+
+                Trace.WriteLine(step);
+
+                // Generate route between stations
+                if (step == "start" || step == "foot")
+                {
+                    var route1 = GetFootRoute(startCoords, stationDepart).Result;
+                    var route2 = GetBikeRoute(stationDepart, stationArrivée).Result;
+                    var route3 = GetFootRoute(stationArrivée, endCoords).Result;
+
+                    rep.Add(route1.features[0]);
+                    rep.Add(route2.features[0]);
+                    rep.Add(route3.features[0]);
+                }
+                else if (step == "bike")
+                {
+                    var route2 = GetBikeRoute(startCoords, stationArrivée).Result;
+                    var route3 = GetFootRoute(stationArrivée, endCoords).Result;
+
+                    rep.Add(route2.features[0]);
+                    rep.Add(route3.features[0]);
+                }
+
+                var footPath = GetFootRoute(startCoords, endCoords).Result;
+
+                double totalTime = rep.Select(feature => feature.properties.summary.duration).Sum();
+                if (footPath.features[0].properties.summary.duration < totalTime)
+                {
+                    Trace.WriteLine("Chemin à pied plus court");
+                    rep = new List<Feature>();
+                    rep.Add(footPath.features[0]);
+                }
+                else
+                {
+                    Trace.WriteLine("Chemin à velo plus court");
+
+                }
+
+                SendToQueue(JsonSerializer.Serialize(rep));
+
+                return "succesfull";
+            } catch(Exception e)
+            {
+                Trace.WriteLine(e);
+                SendToQueue("error: path not found");
+                return "error: path not found";
+            }
             
-
-            // Find nearest JCDecaux stations
-            var stationDepart = GetNearestStation(startCoords).Result;
-            var stationArrivée = GetNearestStation(endCoords).Result;
-
-            List<Feature> rep = new List<Feature>();
-
-            Trace.WriteLine(step);
-
-            // Generate route between stations
-            if (step == "start" || step == "foot")
-            {
-                var route1 = GetFootRoute(startCoords, stationDepart).Result;
-                var route2 = GetBikeRoute(stationDepart, stationArrivée).Result;
-                var route3 = GetFootRoute(stationArrivée, endCoords).Result;
-
-                rep.Add(route1.features[0]);
-                rep.Add(route2.features[0]);    
-                rep.Add(route3.features[0]);
-            } else if (step == "bike")
-            {
-                var route2 = GetBikeRoute(startCoords, stationArrivée).Result;
-                var route3 = GetFootRoute(stationArrivée, endCoords).Result;
-
-                rep.Add(route2.features[0]);
-                rep.Add(route3.features[0]);
-            }
-            
-            var footPath = GetFootRoute(startCoords, endCoords).Result;
-
-            double totalTime = rep.Select(feature => feature.properties.summary.duration).Sum();
-            Trace.WriteLine(totalTime + " " + footPath.features[0].properties.summary.duration);
-            if (footPath.features[0].properties.summary.duration < totalTime)
-            {
-                Trace.WriteLine("Chemin à pied plus court");
-                rep = new List<Feature>();
-                rep.Add(footPath.features[0]);
-            } else
-            {
-                Trace.WriteLine("Chemin à velo plus court");
-                
-            }
-
-            SendToQueue(JsonSerializer.Serialize(rep));
-
-            return "succesfull";
         }
 
 
 
         public void setUp()
         {
-            allContracts = getAllContracts().Result;
-
             try
             {
                 // Créer une connexion à ActiveMQ
@@ -133,10 +140,13 @@ namespace ItineraryServer
                 session = connection.CreateSession();
                 
                 Trace.WriteLine($"connected to activeMq");
+
+                allContracts = getAllContracts().Result;
             }
             catch (Exception ex)
             {
-                    Trace.WriteLine(ex);
+                Trace.WriteLine(ex);
+                SendToQueue("error: failed to init server");
             }
         }
 
@@ -170,7 +180,6 @@ namespace ItineraryServer
             //response.EnsureSuccessStatusCode();
             //string responseBody = await response.Content.ReadAsStringAsync();
             string responseContrats = Proxy_Cache.Get(urlContracts + apiKey);
-            Trace.WriteLine($"{responseContrats}");
             List<Contract> allContracts = JsonSerializer.Deserialize<List<Contract>>(responseContrats);
             List<Contract> contractWithStations = new List<Contract>();
             foreach (Contract contract in allContracts)
@@ -179,7 +188,6 @@ namespace ItineraryServer
                 //HttpResponseMessage stationResponse = await client.GetAsync(url);
                 //var allStations = await stationResponse.Content.ReadAsStringAsync();
                 string responseStations = Proxy_Cache.GetWithExpiration(url, 180);
-                Trace.WriteLine($"{responseStations}");
 
                 List<Station> stationsOfContract = JsonSerializer.Deserialize<List<Station>>(responseStations);
                 if( stationsOfContract != null)
@@ -211,7 +219,7 @@ namespace ItineraryServer
             return (result.features[0].geometry.coordinates[1], result.features[0].geometry.coordinates[0]); //inversion lat/long
         }
 
-        private async Task<(double lat, double lon)> GetNearestStation((double lat, double lon) coords)
+        private async Task<(double lat, double lon)> GetNearestStation((double lat, double lon) coords, string infos)
         {
             var nearestContract = GetNearestContract(coords).Result;
             Trace.WriteLine("nearest contract" + nearestContract.ToString());
@@ -226,13 +234,32 @@ namespace ItineraryServer
 
             foreach (Station station in stationsOfContract)
             {
-                double distance = GetDistance(coords, (station.position.latitude, station.position.longitude));
-                if (distance < nearestDistance)
+                if (infos == "départ")
                 {
-                    nearestDistance = distance;
-                    nearestStation = station;
+                    if (station.totalStands.availabilities.bikes > 0)
+                    {
+                        double distance = GetDistance(coords, (station.position.latitude, station.position.longitude));
+                        if (distance < nearestDistance)
+                        {
+                            nearestDistance = distance;
+                            nearestStation = station;
+                        }
+                    }
+                } else if (infos == "arrivée")
+                {
+                    if (station.totalStands.availabilities.bikes < station.totalStands.capacity)
+                    {
+                        double distance = GetDistance(coords, (station.position.latitude, station.position.longitude));
+                        if (distance < nearestDistance)
+                        {
+                            nearestDistance = distance;
+                            nearestStation = station;
+                        }
+                    }
                 }
+                
             }
+            Trace.WriteLine(nearestStation.ToString());
             return (nearestStation.position.latitude, nearestStation.position.longitude);
         }
 

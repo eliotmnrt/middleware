@@ -54,23 +54,26 @@ async function calculatePath(start, end, step) {
 
 
 async function consumeSteps() {
-    console.log(remainingSteps);
-    console.log(stepContainer.childElementCount);
     if (3 < stepContainer.childElementCount) {
         stepContainer.removeChild(stepContainer.firstChild);
-        remainingSteps--;
-    } else if (0 < stepContainer.childElementCount < 3 && remainingSteps > 3) {
-        const step= stepContainer.firstChild;
+    } else if (0 < stepContainer.childElementCount <= 3 && remainingSteps > 0) {
+        const step= stepContainer.lastChild;
         const point = step.attributes['point'].value;
         const end = document.querySelector("my-menu").shadowRoot.querySelectorAll('my-input')[1].shadowRoot.querySelector('.custom-input').value;
-        remainingSteps = calculatePath(path[point], end, step.attributes['way'].value);
-    } else if (0 < stepContainer.childElementCount && stepContainer.childElementCount <= 3) {
+        clearInterval(intervalId)
+        calculatePath(path[point], end, step.attributes['way'].value);
+    } else if (0 < stepContainer.childElementCount && stepContainer.childElementCount <= 3 && remainingSteps === 0) {
         stepContainer.removeChild(stepContainer.firstChild);
-        remainingSteps--;
-    } else if (remainingSteps === 0) {
+    } else if (stepContainer.childElementCount === 0) {
         clearInterval(intervalId);
         k = 0;
+        if (polyline.length > 0) {
+            polyline.map(poly => window.map.removeLayer(poly));
+        }
         alert("Arrivé à destination");
+    } else {
+        alert("mauvais cas")
+        clearInterval(intervalId);
     }
 }
 
@@ -99,6 +102,10 @@ if (window.WebSocket) {
             client.debug("connected to Stomp");
             client.subscribe(destination, function (message) {
                 mess = message.body;
+                if(message.body.toString().startsWith("error")){
+                    alert(message.body);
+                    return;
+                }
                 const response = JSON.parse(message.body);
                 let coords = [];
                 if (markers.length > 0) {
@@ -114,6 +121,7 @@ if (window.WebSocket) {
                 let totalSteps = 0;
                 let nbDisplaySteps = 10;
                 let totalTime = 0;
+                let nbDisplayed = 0;
                 for (const element of response) {
                     totalTime += element.properties.summary.duration;
                     let partOfPath = [];
@@ -123,7 +131,7 @@ if (window.WebSocket) {
                     console.log(way);
                     const stepContainer = document.querySelector("my-menu").shadowRoot.querySelector('#steps-container');
                     const allSteps = data.properties.segments[0].steps;
-                    totalSteps += allSteps;
+                    totalSteps += allSteps.length;
                     for (let i = 0; i < allSteps.length; i++) {
                         if (allSteps.length <= i) break;
                         const step = allSteps[i];
@@ -138,6 +146,7 @@ if (window.WebSocket) {
                             stepElement.setAttribute('way', way);
                             stepContainer.appendChild(stepElement);
                             nbDisplaySteps--;
+                            nbDisplayed++
                             k++;
                         }
 
@@ -154,7 +163,6 @@ if (window.WebSocket) {
                     polyline.push(L.polyline(latLngCoordinates, {color: way === 'foot'? 'blue':'red'}).addTo(window.map));
                     partOfPath.forEach(coord => path.push(coord));
                     partOfPath = [];
-                    console.log(lastPoint);
                     const bounds = L.latLngBounds([response[0].geometry.coordinates[0][1], response[0].geometry.coordinates[0][0]],[data.geometry.coordinates[lastPoint][1], data.geometry.coordinates[lastPoint][0]]);
                     map.fitBounds(bounds);
                 }
@@ -170,7 +178,7 @@ if (window.WebSocket) {
                 }
 
 
-                remainingSteps = totalSteps.length;
+                remainingSteps = totalSteps - nbDisplayed;
                 startConsumingSteps();
 
             });
