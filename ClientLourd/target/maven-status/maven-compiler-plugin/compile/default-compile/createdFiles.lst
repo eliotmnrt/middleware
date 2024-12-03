@@ -1,7 +1,13 @@
+sample2_waypoints\RoutePainter.class
 com\client\IStationServiceSoap.class
 com\client\package-info.class
 com\client\GetItineraryResponse.class
-com\client\ObjectFactory.class
 com\client\App.class
-com\client\GetItinerary.class
 com\client\StationService.class
+com\client\StompQueueConsumer$QueueConsumer.class
+com\client\StompQueueConsumer$MyMessageProcessor.class
+com\client\ObjectFactory.class
+com\client\GetItinerary.class
+com\client\StompQueueConsumer$QueueConsumer$MessageListener.class
+com\client\StompQueueConsumer.class
+com\client\StompQueueConsumer$1.class

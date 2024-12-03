@@ -1,7 +1,9 @@
-C:\Users\eliot\IdeaProjects\ClientLourd\ClientLourd\src\main\java\com\client\App.java
-C:\Users\eliot\IdeaProjects\ClientLourd\ClientLourd\target\generated-sources\com\client\GetItinerary.java
-C:\Users\eliot\IdeaProjects\ClientLourd\ClientLourd\target\generated-sources\com\client\GetItineraryResponse.java
-C:\Users\eliot\IdeaProjects\ClientLourd\ClientLourd\target\generated-sources\com\client\IStationServiceSoap.java
-C:\Users\eliot\IdeaProjects\ClientLourd\ClientLourd\target\generated-sources\com\client\ObjectFactory.java
-C:\Users\eliot\IdeaProjects\ClientLourd\ClientLourd\target\generated-sources\com\client\package-info.java
-C:\Users\eliot\IdeaProjects\ClientLourd\ClientLourd\target\generated-sources\com\client\StationService.java
+C:\Users\eliot\IdeaProjects\middleware\ClientLourd\src\main\java\com\client\App.java
+C:\Users\eliot\IdeaProjects\middleware\ClientLourd\src\main\java\com\client\RoutePainter.java
+C:\Users\eliot\IdeaProjects\middleware\ClientLourd\src\main\java\com\client\StompQueueConsumer.java
+C:\Users\eliot\IdeaProjects\middleware\ClientLourd\target\generated-sources\com\client\GetItinerary.java
+C:\Users\eliot\IdeaProjects\middleware\ClientLourd\target\generated-sources\com\client\GetItineraryResponse.java
+C:\Users\eliot\IdeaProjects\middleware\ClientLourd\target\generated-sources\com\client\IStationServiceSoap.java
+C:\Users\eliot\IdeaProjects\middleware\ClientLourd\target\generated-sources\com\client\ObjectFactory.java
+C:\Users\eliot\IdeaProjects\middleware\ClientLourd\target\generated-sources\com\client\package-info.java
+C:\Users\eliot\IdeaProjects\middleware\ClientLourd\target\generated-sources\com\client\StationService.java
