@@ -104,6 +104,10 @@ if (window.WebSocket) {
             client.subscribe(destination, function (message) {
                 let p = document.createElement("p");
                 mess = message.body;
+                if(message.body.toString().startsWith("error")){
+                    alert(message.body);
+                    return;
+                }
                 const response = JSON.parse(message.body);
                 let coords = [];
                 if (markers.length > 0) {

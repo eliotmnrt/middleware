@@ -48,7 +48,7 @@ namespace ItineraryServer
             hostSoap.Description.Behaviors.Add(smb);
 
             //Start the Service
-            //host.Open();
+            host.Open();
             hostSoap.Open();
             
 
