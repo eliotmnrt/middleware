@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 let polyline = [];
 let markers = [];
-let remainingSteps;
+let remainingSteps = 0;
 let path;
 let k = 0;
 let intervalId = null;
@@ -85,24 +85,19 @@ let mess;
 
 if (window.WebSocket) {
     var client, destination;
-    document.getElementById("debug").onclick = function () {
+    document.querySelector("#go").onclick = connectServer();
+
+        function connectServer() {
         let url = "ws://localhost:61614/stomp";
         let login = "admin";
         let passcode = "password";
         destination = "itineraryQueue";
 
         client = Stomp.client(url);
-
-        /* this allows to display debug logs directly on the web page
-        client.debug = function(str) {
-            document.getElementById("debug").append(document.createTextNode(str + "\n"));
-        };*/
-
         // the client is notified when it is connected to the server.
         client.connect(login, passcode, function (frame) {
             client.debug("connected to Stomp");
             client.subscribe(destination, function (message) {
-                let p = document.createElement("p");
                 mess = message.body;
                 const response = JSON.parse(message.body);
                 let coords = [];
@@ -165,8 +160,6 @@ if (window.WebSocket) {
 
                 remainingSteps = totalSteps.length;
                 startConsumingSteps();
-                p.appendChild(document.createTextNode(message.body));
-                document.getElementById("debug").append(p);
 
             });
         });
