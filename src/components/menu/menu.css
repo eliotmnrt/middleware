@@ -45,6 +45,6 @@ img.deco-input{
     border-radius: 8px;
     z-index: 1000;
     padding: 2px;
-    overflow-y: hidden;
+    overflow-y: scroll;
     margin-left: 15px;
 }

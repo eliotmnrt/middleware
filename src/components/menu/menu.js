@@ -5,7 +5,6 @@ class Menu extends HTMLElement {
         super();
         // Attach the shadow DOM
         const shadow = this.attachShadow({ mode: 'open' });
-
         // Fetch the external HTML content
         fetch('./components/menu/menu.html')
             .then(response => response.text())

@@ -2,6 +2,7 @@ let stepContainer;
 document.addEventListener('DOMContentLoaded', () => {
     const observer = new MutationObserver(() => {
         const myMenu = document.querySelector("my-menu");
+
         if (myMenu && myMenu.shadowRoot) {
             stepContainer = myMenu.shadowRoot.querySelector("#steps-container");
             console.log(stepContainer);
@@ -70,14 +71,44 @@ async function consumeSteps() {
         if (polyline.length > 0) {
             polyline.map(poly => window.map.removeLayer(poly));
         }
-        alert("Arrivé à destination");
+        finalAlert("Arrivé à destination");
+
     } else {
-        alert("mauvais cas")
+        customAlert("mauvais cas")
         clearInterval(intervalId);
     }
 }
 
+function customAlert(message){
+    const alertContainer = document.createElement('div');
+    alertContainer.id = 'custom-alert';
+    alertContainer.innerHTML = `
+        <div class="alert-content">
+            <p>${message}</p>
+            <button id="alert-ok">OK</button>
+        </div>
+    `;
+    document.body.appendChild(alertContainer);
+    document.getElementById('alert-ok').addEventListener('click', () => {
+        document.body.removeChild(alertContainer);
+    });
+}
+function finalAlert(message){
+    const alertContainer = document.createElement('div');
+    alertContainer.id = 'custom-alert';
+    alertContainer.innerHTML = `
+        <div class="alert-content">
+            <p>${message}</p>
+            <button id="alert-ok">OK</button>
+        </div>
+    `;
+    document.body.appendChild(alertContainer);
+    document.getElementById('alert-ok').addEventListener('click', () => {
+        document.body.removeChild(alertContainer);
+        window.location.reload();
+    });
 
+}
 function startConsumingSteps() {
     if (intervalId) {
         clearInterval(intervalId);
@@ -103,7 +134,7 @@ if (window.WebSocket) {
             client.subscribe(destination, function (message) {
                 mess = message.body;
                 if(message.body.toString().startsWith("error")){
-                    alert(message.body);
+                    customAlert(message.body);
                     return;
                 }
                 const response = JSON.parse(message.body);

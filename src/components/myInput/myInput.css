@@ -12,10 +12,10 @@
 
 }
 img{
-    width: 12px;
+    width: 11px;
     position: absolute;
-    left: 255px;
-    margin-top: 16px;
+    left: 259px;
+    margin-top: 13px;
 }
 .info-icon:hover{
     cursor: pointer;

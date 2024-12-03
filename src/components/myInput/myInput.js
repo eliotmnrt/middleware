@@ -92,7 +92,7 @@ class MyInput extends HTMLElement {
                 customInput.addEventListener('input', () => fetchSuggestions(customInput.value));
                 const infoIcon= shadow.querySelector('.info-icon');
                 infoIcon.addEventListener('click', () => {
-                    alert('Ceci est un champ de saisie pour les adresses');
+                    customAlert('Ceci est un champ de saisie pour les adresses');
                 });
 
 
