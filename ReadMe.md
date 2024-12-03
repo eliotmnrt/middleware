@@ -37,8 +37,8 @@ npm install
 commande pour lancer activeMQ:
  se placer sur le répertoire bin de activeMQ et exécuter la commande:`activemq start`
 ### Serveur c# Backend et ProxyCache
-- lancez le serveur c# de backend ItineraryServer, le ficher.exe se trouve dans le dossier de rendu du projet
-- lancer le serveur ProxyCache, le fichier.exe se trouve dans le dossier du rendu du projet
+- lancez le serveur c# de backend ItineraryServer, le ItineraryServer.exe se trouve dans le dossier de rendu du projet dans: [ItineraryServer/bin/Debug/ItineraryServer.exe](ItineraryServer/bin/Debug/ItineraryServer.exe)
+- lancer le serveur ProxyCache, le ProxyCache.exe se trouve dans le dossier du rendu du projet dans: [ProxyCache/bin/Debug/ProxyCache.exe](ProxyCache/bin/Debug/ProxyCache.exe)
 
 ## Version client HTML/CSS/JS
 Note: le serveur backend et le proxy doivent être lancé avant de démarrer le frontend et le client lourd ne peut pas être démarré simutanément avec le client léger
